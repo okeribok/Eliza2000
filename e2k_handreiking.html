@@ -347,263 +347,466 @@ class EnhancedDutchEliza {
 // ===================================================================================
 
 const websiteQA = [
-{
+  {
+    id: "help-info",
+    question: "Help",
+    shortAnswer: "Ik help u graag met vragen over de verantwoorde inzet van generatieve AI bij de overheid. U kunt mij bijvoorbeeld vragen over:",
+    fullAnswer: "• Wanneer en hoe u AI mag gebruiken in uw werk\n• Juridische kaders zoals AVG en AI-verordening\n• Ethische overwegingen en risico's\n• Praktische tips voor effectief en veilig gebruik\n• Governance en organisatorische aspecten\n\nWaar kan ik u mee helpen?",
+    actions: [
+      { text: "Mag ik AI gebruiken voor mijn werk?", nextId: "ambtenaar-mag-ik-ai-gebruiken" },
+      { text: "Wat zijn de belangrijkste regels?", nextId: "ambtenaar-regels-overzicht" },
+      { text: "Praktische tips voor gebruik", nextId: "ambtenaar-praktische-tips" }
+    ]
+  },
+  {
     id: "ambtenaar-mag-ik-ai-gebruiken",
     question: "Mag ik generatieve AI gebruiken voor mijn werk?",
-    keywords: ["mag", "gebruiken", "toegestaan", "inzetten", "ai", "chatgpt", "werk"],
-    shortAnswer: "De inzet van generatieve AI is uitsluitend toegestaan onder strikte voorwaarden om juridische en ethische risico's te vermijden. Het onjuist gebruik, met name met persoonsgegevens, kan wetten overtreden.",
+    keywords: ["mag", "gebruiken", "toegestaan", "inzetten", "ai", "chatgpt", "werk", "toestemming"],
+    shortAnswer: "Ja, u mag generatieve AI gebruiken voor uw werk, mits u zich houdt aan de richtlijnen voor verantwoord gebruik.",
+    followUp: "Wilt u weten wat de voorwaarden zijn?",
+    fullAnswer: "De inzet van generatieve AI is toegestaan onder strikte voorwaarden om juridische en ethische risico's te vermijden. Het belangrijkste uitgangspunt is dat AI altijd ondersteunend wordt ingezet, niet als vervanging voor menselijke besluitvorming.",
+    moreInfo: "De handreiking benadrukt een 'ja, mits' benadering waarbij AI kansen biedt voor efficiëntere processen en betere dienstverlening, onder voorwaarde dat organisaties over de juiste gereedschapskist beschikken om deze technologie verantwoord in te zetten.",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=4",
     actions: [
-        { text: "Wat is absoluut verboden?", nextId: "ambtenaar-verboden-gebruik" },
-        { text: "Wat zijn de verplichte voorwaarden?", nextId: "ambtenaar-regels-samenvatting" },
-        { text: "Voor welke (veilige) taken mag het wel?", nextId: "ambtenaar-toepassingen" }
+      { text: "Wat zijn de voorwaarden?", nextId: "ambtenaar-regels-overzicht" },
+      { text: "Voor welke taken mag het?", nextId: "ambtenaar-toepassingen-overzicht" },
+      { text: "Wat is absoluut niet toegestaan?", nextId: "ambtenaar-verboden-gebruik" }
+    ]
+  },
+  {
+    id: "ambtenaar-regels-overzicht",
+    question: "Wat zijn de belangrijkste regels voor verantwoord AI-gebruik?",
+    keywords: ["regels", "voorwaarden", "belangrijk", "richtlijnen", "verantwoord"],
+    shortAnswer: "De drie kernregels zijn: geen gevoelige data invoeren, altijd menselijke controle behouden, en kritisch blijven over de output.",
+    followUp: "Wilt u meer details over deze regels?",
+    fullAnswer: "Belangrijkste regels voor verantwoord gebruik:\n\n1. **Gegevensbescherming**: Voer nooit persoonsgegevens of vertrouwelijke overheidsinformatie in\n2. **Menselijke controle**: Neem AI-output nooit klakkeloos over - u blijft eindverantwoordelijk\n3. **Kritische beoordeling**: Controleer altijd op juistheid, bias en geschiktheid voor uw context",
+    moreInfo: "Deze regels zijn gebaseerd op juridische vereisten (AVG, AI-verordening) en ethische overwegingen. Ze helpen risico's te beperken zonder de voordelen van AI uit te sluiten. De handreiking biedt concrete handvatten om binnen deze kaders effectief te werken.",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=22",
+    actions: [
+      { text: "Risico's van gevoelige data", nextId: "ambtenaar-persoonsgegevens-risicos" },
+      { text: "Waarom menselijke controle?", nextId: "ambtenaar-menselijke-controle" },
+      { text: "Hoe controleer ik de output?", nextId: "ambtenaar-output-controleren" }
     ]
   },
   {
     id: "ambtenaar-verboden-gebruik",
-    question: "Wat is absoluut verboden bij het gebruik van generatieve AI?",
-    keywords: ["verboden", "niet toegestaan", "persoonsgegevens", "pii", "gevoelig", "avg"],
-    [cite_start]shortAnswer: "Het is absoluut verboden om persoonsgegevens, staatsgeheimen, of andere gevoelige of vertrouwelijke overheidsinformatie in te voeren in publieke, niet-gecontracteerde AI-diensten (zoals de openbare versie van ChatGPT). [cite: 240, 307, 471]",
-    [cite_start]fullAnswer: "Dit type gebruik levert onacceptabele risico's op, omdat de ingevoerde data kan worden opgeslagen en gebruikt voor trainingsdoeleinden door de leverancier, wat kan leiden tot datalekken en schending van o.a. de AVG. [cite: 302, 308, 429] [cite_start]Gebruik van AI onder consumentenvoorwaarden mag enkel voor verkenning in een gecontroleerde omgeving zonder enige gevoelige data. [cite: 240]",
+    question: "Wat is absoluut niet toegestaan bij het gebruik van generatieve AI?",
+    keywords: ["verboden", "niet toegestaan", "persoonsgegevens", "gevoelig", "staatsgeheim"],
+    shortAnswer: "Het is niet toegestaan om persoonsgegevens of vertrouwelijke overheidsinformatie in te voeren in publieke AI-diensten zoals ChatGPT.",
+    followUp: "Wilt u begrijpen waarom dit zo risicovol is?",
+    fullAnswer: "Absoluut verboden gebruik:\n• Persoonsgegevens invoeren in niet-gecontracteerde AI-diensten\n• Staatsgeheimen of vertrouwelijke informatie delen\n• AI gebruiken voor directe besluitvorming zonder menselijke tussenkomst\n• Gebruik onder consumentenvoorwaarden voor productiewerk",
+    moreInfo: "Deze beperkingen bestaan omdat publieke AI-diensten vaak data opslaan en gebruiken voor training, wat kan leiden tot datalekken en schending van privacy- en veiligheidswetgeving. Experimenteren is wel mogelijk in gecontroleerde omgevingen zonder gevoelige data.",
     url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=13",
     actions: [
-        { text: "Wat zijn dan wel de voorwaarden?", nextId: "ambtenaar-regels-samenvatting" },
-        { text: "Terug naar hoofdonderwerpen", nextId: "help-info" }
+      { text: "Wat zijn de risico's precies?", nextId: "ambtenaar-persoonsgegevens-risicos" },
+      { text: "Zijn er wel veilige alternatieven?", nextId: "ambtenaar-veilige-alternatieven" },
+      { text: "Terug naar toegestaan gebruik", nextId: "ambtenaar-toepassingen-overzicht" }
     ]
   },
   {
-    id: "ambtenaar-regels-samenvatting",
-    question: "Wat zijn de belangrijkste regels bij het gebruik van AI?",
-    keywords: ["regels", "samenvatting", "belangrijkste", "voorwaarden"],
-    shortAnswer: "De drie belangrijkste regels zijn:\n1. Voer nooit persoonsgegevens of gevoelige informatie in.\n2. Neem de output nooit klakkeloos over (menselijke controle).\n3. Wees bewust van auteursrecht en de betrouwbaarheid van de output.",
+    id: "ambtenaar-persoonsgegevens-risicos",
+    question: "Wat zijn de risico's van het invoeren van persoonsgegevens in AI?",
+    keywords: ["persoonsgegevens", "risico", "privacy", "avg", "datalekken"],
+    shortAnswer: "Het grootste risico is dat ingevoerde gegevens worden opgeslagen door de AI-leverancier en kunnen lekken naar andere gebruikers.",
+    followUp: "Wilt u meer weten over de juridische aspecten?",
+    fullAnswer: "Belangrijkste risico's:\n• **Dataopslag**: Gegevens kunnen door leveranciers worden bewaard\n• **Training**: Uw data kan gebruikt worden om het model te verbeteren\n• **Lekken**: Informatie kan opduiken in output naar andere gebruikers\n• **AVG-overtreding**: Onrechtmatige verwerking van persoonsgegevens",
+    moreInfo: "De AVG vereist een wettelijke grondslag voor het verwerken van persoonsgegevens. Bij publieke AI-diensten is vaak onduidelijk hoe data wordt gebruikt, waar het wordt opgeslagen, en wie er toegang toe heeft. Dit maakt rechtmatige verwerking vrijwel onmogelijk.",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=15",
+    actions: [
+      { text: "Hoe herken ik persoonsgegevens?", nextId: "ambtenaar-persoonsgegevens-herkennen" },
+      { text: "Zijn er veilige alternatieven?", nextId: "ambtenaar-veilige-alternatieven" },
+      { text: "Wat zegt de AVG hierover?", nextId: "governance-avg-vereisten" }
+    ]
+  },
+  {
+    id: "ambtenaar-persoonsgegevens-herkennen",
+    question: "Hoe herken ik wat persoonsgegevens zijn?",
+    keywords: ["persoonsgegevens", "herkennen", "identificeren", "definitie"],
+    shortAnswer: "Persoonsgegevens zijn alle gegevens waarmee een persoon direct of indirect identificeerbaar is.",
+    followUp: "Wilt u voorbeelden zien van wat wel en niet als persoonsgegeven geldt?",
+    fullAnswer: "Voorbeelden van persoonsgegevens:\n• **Direct**: naam, adres, BSN, telefoonnummer, email\n• **Indirect**: combinatie van leeftijd + woonplaats + functie\n• **Online**: IP-adressen, gebruikersnamen, tracking data\n• **Bijzonder**: gezondheid, politieke voorkeur, religie",
+    moreInfo: "Let op: ook geanonimiseerde data kan persoonsgegeven zijn als heridentificatie mogelijk blijft. Bij twijfel, behandel informatie als persoonsgegeven. Gebruik in plaats daarvan fictieve voorbeelden of algemene scenario's in uw AI-prompts.",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=15",
+    actions: [
+      { text: "Wat doe ik als ik twijfel?", nextId: "ambtenaar-twijfel-data" },
+      { text: "Veilige alternatieven", nextId: "ambtenaar-veilige-alternatieven" },
+      { text: "Terug naar risico's", nextId: "ambtenaar-persoonsgegevens-risicos" }
+    ]
+  },
+  {
+    id: "ambtenaar-twijfel-data",
+    question: "Wat moet ik doen als ik twijfel of iets een persoonsgegeven is?",
+    keywords: ["twijfel", "onzeker", "niet zeker", "advies"],
+    shortAnswer: "Bij twijfel: behandel het als persoonsgegeven en gebruik het niet. Raadpleeg uw privacy officer of gebruik fictieve voorbeelden.",
+    followUp: "Wilt u tips voor het maken van veilige fictieve voorbeelden?",
+    fullAnswer: "Bij twijfel over data:\n1. **Voorzorgsprincipe**: behandel het als persoonsgegeven\n2. **Intern overleg**: raadpleeg uw CPO of FG\n3. **Alternatieven**: gebruik fictieve, algemene voorbeelden\n4. **Documentatie**: leg uw overwegingen vast",
+    moreInfo: "Tips voor veilige alternatieven:\n• Maak realistische maar fictieve scenario's\n• Gebruik algemene kenmerken in plaats van specifieke details\n• Test uw prompt eerst met openbare, niet-gevoelige informatie\n• Houd een logboek bij van wat u wel en niet gebruikt",
     url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=22",
     actions: [
-        { text: "Risico's persoonsgegevens", nextId: "ambtenaar-persoonsgegevens-gebruiken" },
-        { text: "Betrouwbaarheid (hallucineren)", nextId: "ambtenaar-betrouwbaarheid-hallucineren" },
-        { text: "Auteursrecht uitgelegd", nextId: "ambtenaar-auteursrecht" }
+      { text: "Wie is mijn privacy officer?", nextId: "governance-privacy-contact" },
+      { text: "Tips voor fictieve voorbeelden", nextId: "ambtenaar-fictieve-voorbeelden" },
+      { text: "Terug naar veilig gebruik", nextId: "ambtenaar-veilige-alternatieven" }
     ]
   },
   {
-    id: "ambtenaar-scope-handreiking",
-    question: "Wat is het doel van deze handreiking voor mij als ambtenaar?",
-    keywords: ["doel", "scope", "handreiking", "document", "waarom"],
-    shortAnswer: "De handreiking geeft u als ambtenaar direct inzetbare handvatten om generatieve AI op een verantwoorde manier te gebruiken in uw werk.",
-    actions: [
-        { text: "Is de handreiking bindend?", nextId: "ambtenaar-handreiking-bindend" },
-        { text: "Welke onderwerpen behandelt het?", nextId: "ambtenaar-handreiking-onderwerpen" }
-    ]
-  },
-  {
-    id: "ambtenaar-handreiking-bindend",
-    question: "Is de handreiking bindend?",
-    keywords: ["bindend", "verplicht", "regels", "wet"],
-    shortAnswer: "Nee, het document is niet-bindend en legt geen nieuwe verplichtingen op. Het is bedoeld als een direct bruikbaar hulpmiddel en praktische gids.",
-    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=5",
-    actions: [ {text: "Terug naar hoofdonderwerpen", nextId: "help-info"} ]
-  },
-  {
-    id: "ambtenaar-handreiking-onderwerpen",
-    question: "Welke onderwerpen behandelt de handreiking?",
-    keywords: ["onderwerpen", "inhoud", "hoofdstukken"],
-    shortAnswer: "De handreiking behandelt de technologische, organisatorische, ethische en juridische voorwaarden voor de verantwoorde inzet van generatieve AI, van experiment tot toepassing.",
-    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=5",
-    actions: [
-        { text: "Juridische aspecten", nextId: "governance-ai-verordening" },
-        { text: "Ethische risico's", nextId: "governance-bias-discriminatie" },
-        { text: "Governance", nextId: "governance-governancestructuur-opzetten" }
-    ]
-  },
-  {
-    id: "governance-risicoanalyse-verplicht",
-    question: "Is het uitvoeren van een risicoanalyse verplicht voordat we generatieve AI inzetten?",
-    keywords: ["risicoanalyse", "verplicht", "dpia", "iama", "governance"],
-    shortAnswer: "Ja, voordat een generatief AI-systeem wordt ingekocht of ontwikkeld, moet een risicoanalyse worden uitgevoerd zoals een IAMA, AIIA of een verplichte (pre-scan) DPIA bij persoonsgegevens.",
+    id: "ambtenaar-veilige-alternatieven",
+    question: "Zijn er wel veilige alternatieven voor AI-gebruik?",
+    keywords: ["veilig", "alternatief", "oplossing", "gecontracteerd", "lokaal"],
+    shortAnswer: "Ja, u kunt gebruikmaken van gecontracteerde AI-diensten, lokale modellen, of experimenteren in gecontroleerde omgevingen.",
+    followUp: "Wilt u meer weten over deze alternatieven?",
+    fullAnswer: "Veilige alternatieven:\n• **Gecontracteerde diensten**: AI-tools met privacy-afspraken\n• **Lokale modellen**: AI die op eigen servers draait\n• **Gecontroleerde experimenten**: testen zonder gevoelige data\n• **Publieke informatie**: werken met openbaar beschikbare bronnen",
+    moreInfo: "Uw organisatie werkt mogelijk aan inkoop van gecontracteerde AI-diensten waar wel privacy-afspraken zijn gemaakt. Vraag uw IT-afdeling naar beschikbare opties. Experimenteren met publieke AI kan ook, zolang u geen gevoelige data gebruikt.",
     url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=13",
     actions: [
-        { text: "Wat is een DPIA?", nextId: "governance-dpia-uitleg" },
-        { text: "Wat is hoog-risico AI?", nextId: "governance-hoog-risico-ai" }
-    ]
-  },
-   {
-    id: "governance-dpia-uitleg",
-    question: "Wat is een DPIA?",
-    keywords: ["dpia", "data protection impact assessment", "avg"],
-    shortAnswer: "Een DPIA (Data Protection Impact Assessment) is een instrument om vooraf de privacyrisico's van een gegevensverwerking in kaart te brengen, zodat maatregelen genomen kunnen worden om deze risico's te verkleinen.",
-    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=24",
-     actions: [ {text: "Terug naar hoofdonderwerpen", nextId: "help-info"} ]
-  },
-  {
-    id: "ambtenaar-persoonsgegevens-gebruiken",
-    question: "Wat zijn de risico's van persoonsgegevens in AI?",
-    keywords: ["persoonsgegevens", "avg", "privacy", "gevoelige informatie", "chatgpt", "risicos"],
-    shortAnswer: "Het grootste risico is dat ingevoerde persoonsgegevens worden opgeslagen door de AI-leverancier, gebruikt voor training en onbedoeld kunnen lekken naar andere gebruikers.",
-    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=15",
-    actions: [
-        { text: "Hoe zit het met auteursrecht?", nextId: "ambtenaar-auteursrecht" },
-        { text: "Cybersecurity risico's", nextId: "governance-cybersecurity" }
+      { text: "Hoe vind ik gecontracteerde diensten?", nextId: "governance-gecontracteerde-diensten" },
+      { text: "Wat zijn lokale modellen?", nextId: "governance-lokale-modellen" },
+      { text: "Tips voor veilig experimenteren", nextId: "ambtenaar-veilig-experimenteren" }
     ]
   },
   {
-    id: "governance-governancestructuur-opzetten",
-    question: "Hoe zetten we een effectieve AI-governance structuur op?",
-    keywords: ["governance", "structuur", "beleid", "verantwoordelijkheid", "cdo"],
-    shortAnswer: "Een effectieve AI-governance bestaat uit drie pijlers: een AI-strategie (beleid), een AI-stuurgroep (mensen) en een documentatiestrategie (transparantie).",
-    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=12",
+    id: "ambtenaar-toepassingen-overzicht",
+    question: "Voor welke taken mag ik AI wel gebruiken?",
+    keywords: ["toepassingen", "taken", "gebruik", "toegestaan", "mogelijkheden"],
+    shortAnswer: "AI mag worden gebruikt voor ondersteunende taken zoals brainstormen, tekstbewerking, informatie zoeken en eenvoudige analyses.",
+    followUp: "Wilt u concrete voorbeelden zien?",
+    fullAnswer: "Toegestane toepassingen (altijd ondersteunend):\n• **Brainstormen**: nieuwe ideeën genereren\n• **Tekstwerk**: samenvatten, versimpelen, vertalen\n• **Informatie**: zoeken in publieke bronnen\n• **Analyse**: patronen herkennen in niet-gevoelige data\n• **Coding**: hulp bij softwareontwikkeling",
+    moreInfo: "Deze toepassingen hebben relatief lage risico's en hoge toegevoegde waarde voor dagelijks werk. Belangrijk blijft dat u altijd eindverantwoordelijke bent en de output kritisch beoordeelt op juistheid en geschiktheid.",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=9",
     actions: [
-        { text: "Wat is een RASCI-model?", nextId: "governance-rasci" },
-        { text: "Rol van het Algoritmeregister", nextId: "governance-algoritmeregister" }
-    ]
-  },
-   {
-    id: "governance-rasci",
-    question: "Wat is een RASCI-model?",
-    keywords: ["rasci", "verantwoordelijkheid", "rollen"],
-    shortAnswer: "Een RASCI-model helpt om rollen en verantwoordelijkheden vast te leggen: wie is Responsible (verantwoordelijk), Accountable (eindverantwoordelijk), Supportive (ondersteunend), Consulted (geraadpleegd) en Informed (geïnformeerd).",
-     url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=21",
-     actions: [ {text: "Terug naar governance", nextId: "governance-governancestructuur-opzetten"} ]
-  },
-    {
-    id: "governance-algoritmeregister",
-    question: "Wat is de rol van het Algoritmeregister?",
-    keywords: ["algoritmeregister", "transparantie", "documentatie"],
-    shortAnswer: "Het Algoritmeregister is een openbare publicatie waarin overheidsorganisaties de door hen ingezette algoritmes en AI-systemen documenteren om transparant te zijn over het gebruik, doel en de werking ervan.",
-     url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=12",
-     actions: [ {text: "Terug naar governance", nextId: "governance-governancestructuur-opzetten"} ]
-  },
-  {
-    id: "ambtenaar-auteursrecht",
-    question: "Hoe zit het met auteursrecht?",
-    keywords: ["auteursrecht", "copyright", "bronvermelding", "plagiaat", "trainingsdata"],
-    shortAnswer: "Wees ervan bewust dat AI-resultaten gebaseerd kunnen zijn op auteursrechtelijk beschermd materiaal. Gebruik de output daarom nooit klakkeloos, maar als startpunt. Bij twijfel, gebruik het niet.",
-    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=15",
-    actions: [
-        { text: "Risico's persoonsgegevens", nextId: "ambtenaar-persoonsgegevens-gebruiken" },
-        { text: "Terug naar hoofdregels", nextId: "ambtenaar-regels-samenvatting" }
+      { text: "Voorbeelden brainstormen", nextId: "ambtenaar-brainstorm-voorbeelden" },
+      { text: "Tekstbewerking tips", nextId: "ambtenaar-tekstbewerking" },
+      { text: "Informatie zoeken veilig", nextId: "ambtenaar-informatie-zoeken" }
     ]
   },
   {
-    id: "governance-bias-discriminatie",
-    question: "Wat zijn de risico's op bias en discriminatie?",
-    keywords: ["bias", "discriminatie", "ethiek", "vooroordelen", "eerlijkheid"],
-    shortAnswer: "Het risico is dat AI-modellen discriminerende patronen uit hun trainingsdata overnemen. Dit kan leiden tot bevooroordeelde of on eerlijke resultaten.",
-    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=17",
+    id: "ambtenaar-brainstorm-voorbeelden",
+    question: "Hoe kan ik AI gebruiken voor brainstormen?",
+    keywords: ["brainstorm", "ideeën", "creativiteit", "oplossingen"],
+    shortAnswer: "AI kan helpen door alternatieve perspectieven te bieden, nieuwe invalshoeken te suggereren en creatieve oplossingen voor te stellen.",
+    followUp: "Wilt u praktische tips voor effectief brainstormen?",
+    fullAnswer: "AI voor brainstormen:\n• **Probleem herformuleren**: andere invalshoeken vinden\n• **Scenario's**: 'wat als' situaties verkennen\n• **Alternatieven**: verschillende oplossingsrichtingen\n• **Stakeholder perspectieven**: vanuit verschillende rollen denken",
+    moreInfo: "Voorbeeld prompts: 'Geef 5 alternatieve manieren om [probleem] te benaderen' of 'Wat zouden mogelijke bezwaren zijn tegen [voorstel] vanuit het perspectief van [doelgroep]?'. Gebruik de output als startpunt, niet als eindoplossing.",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=9",
     actions: [
-        { text: "Hoe kunnen we dit voorkomen?", nextId: "governance-bias-voorkomen" }
+      { text: "Voorbeeld prompts", nextId: "ambtenaar-brainstorm-prompts" },
+      { text: "Andere toepassingen", nextId: "ambtenaar-toepassingen-overzicht" },
+      { text: "Tips voor effectieve prompts", nextId: "ambtenaar-prompt-tips" }
     ]
   },
   {
-    id: "governance-bias-voorkomen",
-    question: "Hoe kunnen we bias en discriminatie door AI voorkomen?",
-    keywords: ["bias", "discriminatie", "voorkomen", "mitigeren", "guard rails"],
-    shortAnswer: "Door trainingsdata kritisch te onderzoeken, mitigerende maatregelen ('guard rails') te treffen en AI-systemen die mensenrechten raken regelmatig te testen op ongewenste bias.",
-    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=17",
+    id: "ambtenaar-menselijke-controle",
+    question: "Waarom is menselijke controle altijd nodig?",
+    keywords: ["menselijke controle", "human-in-the-loop", "verantwoordelijkheid", "eindverantwoordelijk"],
+    shortAnswer: "Omdat AI 'black box' technologie is die fouten kan maken, en omdat u als ambtenaar altijd eindverantwoordelijk blijft voor uw werk.",
+    followUp: "Wilt u meer weten over de beperkingen van AI?",
+    fullAnswer: "Redenen voor menselijke controle:\n• **Black box**: AI-beslissingen zijn niet volledig uitlegbaar\n• **Hallucinaties**: AI kan overtuigend onjuiste informatie geven\n• **Bias**: vooroordelen uit trainingsdata\n• **Verantwoordelijkheid**: u blijft eindverantwoordelijk voor output",
+    moreInfo: "De handreiking benadrukt dat bij de inzet van generatieve AI altijd een vorm van menselijke tussenkomst ingebouwd moet zijn. De ambtenaar blijft aan het stuur en draagt de eindverantwoordelijkheid.",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=10",
     actions: [
-        { text: "Wat is 'non-discriminatie by design'?", nextId: "governance-non-discriminatie-design" }
+      { text: "Wat zijn AI hallucinaties?", nextId: "ambtenaar-hallucinaties" },
+      { text: "Hoe herken ik bias?", nextId: "governance-bias-herkennen" },
+      { text: "Praktische controletips", nextId: "ambtenaar-output-controleren" }
     ]
   },
-    {
-    id: "governance-non-discriminatie-design",
-    question: "Wat is 'non-discriminatie by design'?",
-    keywords: ["non-discriminatie by design", "handreiking", "ethiek"],
-    shortAnswer: "Dit is een aanbevolen aanpak (en handreiking) om al tijdens het ontwerpproces van een systeem maatregelen te nemen om discriminatie te voorkomen, in plaats van het achteraf te proberen te corrigeren.",
-    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=17",
-    actions: [ {text: "Terug naar Ethische Risico's", nextId: "governance-bias-discriminatie"} ]
+  {
+    id: "ambtenaar-output-controleren",
+    question: "Hoe controleer ik of AI-output juist en bruikbaar is?",
+    keywords: ["controleren", "output", "juistheid", "kwaliteit", "verificatie"],
+    shortAnswer: "Controleer de output door feiten te verifiëren, bronnen te raadplegen, en te beoordelen of het past bij uw context en doelen.",
+    followUp: "Wilt u een praktische checklist?",
+    fullAnswer: "Controlestappen:\n1. **Factcheck**: controleer feiten bij betrouwbare bronnen\n2. **Contextcheck**: past het bij uw specifieke situatie?\n3. **Biascheck**: zijn er vooroordelen of ongenuanceerde standpunten?\n4. **Volledigheidscheck**: mist er belangrijke informatie?",
+    moreInfo: "Aanvullende tips:\n• Vergelijk met uw eigen expertise\n• Vraag om alternatieven of tegenargumenten\n• Test verschillende versies van uw prompt\n• Documenteer wat u gebruikt en waarom\n• Overleg met collega's bij belangrijke beslissingen",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=22",
+    actions: [
+      { text: "Wat is een factcheck?", nextId: "ambtenaar-factcheck-tips" },
+      { text: "Hoe herken ik bias?", nextId: "governance-bias-herkennen" },
+      { text: "Terug naar controle", nextId: "ambtenaar-menselijke-controle" }
+    ]
+  },
+  {
+    id: "ambtenaar-hallucinaties",
+    question: "Wat zijn AI hallucinaties en hoe herken ik ze?",
+    keywords: ["hallucinaties", "confabuleren", "onjuist", "fouten"],
+    shortAnswer: "AI hallucinaties zijn overtuigende maar onjuiste informatie die AI genereert. Ze zijn lastig te herkennen omdat ze vaak plausibel klinken.",
+    followUp: "Wilt u tips om hallucinaties te voorkomen?",
+    fullAnswer: "Over hallucinaties:\n• **Definitie**: AI presenteert onware informatie als feit\n• **Oorzaak**: AI is geoptimaliseerd voor plausibiliteit, niet accuratesse\n• **Herkenning**: vaak heel overtuigend en gedetailleerd\n• **Risico**: vooral bij specifieke feiten, data, citaten",
+    moreInfo: "Hallucinaties komen vaker voor bij:\n• Specifieke statistieken of cijfers\n• Citaten en bronvermeldingen\n• Recente gebeurtenissen\n• Zeer specifieke technische details\n• Namen van personen of organisaties",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=18",
+    actions: [
+      { text: "Hoe voorkom ik hallucinaties?", nextId: "ambtenaar-hallucinaties-voorkomen" },
+      { text: "Factcheck strategieën", nextId: "ambtenaar-factcheck-tips" },
+      { text: "Terug naar output controleren", nextId: "ambtenaar-output-controleren" }
+    ]
+  },
+  {
+    id: "ambtenaar-praktische-tips",
+    question: "Heeft u praktische tips voor het gebruik van AI?",
+    keywords: ["tips", "praktisch", "advies", "gebruiken", "effectief"],
+    shortAnswer: "Ja! De belangrijkste tips zijn: wees specifiek in uw prompts, vraag om uitleg van de redenering, en experimenteer met verschillende formuleringen.",
+    followUp: "Wilt u gedetailleerde prompt-tips?",
+    fullAnswer: "Praktische tips:\n• **Specificiteit**: geef duidelijke, gedetailleerde instructies\n• **Context**: vertel wat u wilt bereiken en voor wie\n• **Voorbeelden**: gebruik concrete voorbeelden in uw prompt\n• **Iteratie**: verfijn uw prompt op basis van de resultaten",
+    moreInfo: "Extra tips:\n• Deel complexe taken op in kleinere stappen\n• Vraag om alternatieven en tegenargumenten\n• Gebruik 'chain-of-thought' prompting voor complexe redeneringen\n• Experimenteer met rollenspel (bijv. 'reageer als expert in...')\n• Houd een logboek bij van effectieve prompts",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=22",
+    actions: [
+      { text: "Prompt schrijftips", nextId: "ambtenaar-prompt-tips" },
+      { text: "Chain-of-thought uitleg", nextId: "ambtenaar-chain-of-thought" },
+      { text: "Effectieve voorbeelden", nextId: "ambtenaar-prompt-voorbeelden" }
+    ]
   },
   {
     id: "ambtenaar-prompt-tips",
-    question: "Heb je praktische tips voor het schrijven van prompts?",
-    keywords: ["prompt", "prompting", "instructies", "tips", "effectief"],
-    shortAnswer: "Jazeker. De belangrijkste tips zijn: wees specifiek, geef voldoende context, stel duidelijke regels op (zoals format en lengte) en deel complexe taken op in kleinere stappen.",
+    question: "Hoe schrijf ik effectieve prompts?",
+    keywords: ["prompt", "schrijven", "effectief", "instructies"],
+    shortAnswer: "Goede prompts zijn specifiek, geven context, bevatten voorbeelden en maken duidelijk wat u verwacht als output.",
+    followUp: "Wilt u concrete voorbeelden van goede prompts zien?",
+    fullAnswer: "Elementen van goede prompts:\n• **Doel**: wat wilt u bereiken?\n• **Context**: achtergrondinformatie en doelgroep\n• **Formaat**: hoe moet de output eruit zien?\n• **Beperkingen**: wat wel/niet includeren?",
+    moreInfo: "Structuur voorbeeld:\n'Je bent een [rol]. Ik werk aan [context]. Maak [specifieke taak] voor [doelgroep]. Format: [gewenst format]. Vermijd [beperkingen]. Hier is een voorbeeld: [voorbeeld].'",
     url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=22",
     actions: [
-        { text: "Wat is 'chain-of-thought' prompting?", nextId: "ambtenaar-chain-of-thought" }
+      { text: "Concrete voorbeelden", nextId: "ambtenaar-prompt-voorbeelden" },
+      { text: "Chain-of-thought techniek", nextId: "ambtenaar-chain-of-thought" },
+      { text: "Veelgemaakte fouten", nextId: "ambtenaar-prompt-fouten" }
     ]
   },
   {
     id: "ambtenaar-chain-of-thought",
-    question: "Wat is 'chain-of-thought' prompting?",
-    keywords: ["chain-of-thought", "prompting", "uitlegbaarheid", "redenering"],
-    shortAnswer: "Dit is een techniek waarbij je het AI-model expliciet vraagt om de beredenering van zijn antwoord stapsgewijs uit te leggen. Dit kan helpen om betere resultaten te krijgen en de output beter te controleren.",
+    question: "Wat is chain-of-thought prompting?",
+    keywords: ["chain-of-thought", "redenering", "stappen", "uitleg"],
+    shortAnswer: "Dit is een techniek waarbij u het AI-model vraagt om stap-voor-stap uit te leggen hoe het tot een antwoord komt.",
+    followUp: "Wilt u een voorbeeld zien?",
+    fullAnswer: "Chain-of-thought prompting:\n• **Doel**: inzicht in AI-redenering krijgen\n• **Methode**: vraag om stapsgewijze uitleg\n• **Voordeel**: betere controle over de logica\n• **Toepassing**: vooral nuttig bij complexe vragen",
+    moreInfo: "Voorbeeld: In plaats van 'Wat is de beste oplossing voor X?' vraag 'Analyseer probleem X stap voor stap: 1) Wat zijn de hoofdoorzaken? 2) Welke opties hebben we? 3) Wat zijn de voor- en nadelen? 4) Wat is je aanbeveling en waarom?'",
     url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=23",
-    actions: [ {text: "Terug naar prompt tips", nextId: "ambtenaar-prompt-tips"} ]
-  },
-  {
-    id: "governance-inkoop-ai",
-    question: "Waar moeten we op letten bij de inkoop van AI?",
-    keywords: ["inkoop", "aanschaf", "leverancier", "vendor lock-in", "eisen"],
-    shortAnswer: "Let op het voorkomen van 'vendor lock-in', geef de voorkeur aan open-source en Europese leveranciers, en zorg dat datadeling voor externe training standaard uit staat.",
-    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=13",
-    actions: [ {text: "Terug naar hoofdonderwerpen", nextId: "help-info"} ]
-  },
-  {
-    id: "ambtenaar-betrouwbaarheid-hallucineren",
-    question: "Wat betekent 'hallucineren' bij AI?",
-    keywords: ["betrouwbaarheid", "hallucineren", "confabuleren", "juistheid", "fouten"],
-    shortAnswer: "'Hallucineren' (of 'confabuleren') is wanneer een AI-model onware informatie met grote overtuiging als een feit presenteert. Dit gebeurt omdat het model geoptimaliseerd is om plausibel te klinken, niet per se om accuraat te zijn.",
-    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=18",
     actions: [
-        { text: "Hoe kan ik dit controleren?", nextId: "ambtenaar-menselijke-tussenkomst" },
-        { text: "Terug naar hoofdregels", nextId: "ambtenaar-regels-samenvatting" }
+      { text: "Meer voorbeelden", nextId: "ambtenaar-chain-voorbeelden" },
+      { text: "Terug naar prompt tips", nextId: "ambtenaar-prompt-tips" },
+      { text: "Andere technieken", nextId: "ambtenaar-geavanceerde-technieken" }
     ]
   },
   {
-    id: "ambtenaar-uitlegbaarheid-blackbox",
-    question: "Waarom is generatieve AI een 'black box'?",
-    keywords: ["black box", "uitlegbaarheid", "werking", "transparantie"],
-    shortAnswer: "Het wordt een 'black box' genoemd omdat de miljarden berekeningen achter een antwoord het voor mensen onmogelijk maken om de redenering precies te volgen. Daarom mag AI alleen ondersteunend worden ingezet, niet voor directe besluitvorming.",
-    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=18",
-    actions: [ {text: "Terug naar hoofdonderwerpen", nextId: "help-info"} ]
+    id: "governance-avg-vereisten",
+    question: "Wat zegt de AVG over AI-gebruik?",
+    keywords: ["avg", "privacy", "wetgeving", "vereisten"],
+    shortAnswer: "De AVG vereist een wettelijke grondslag voor het verwerken van persoonsgegevens, ook bij AI-gebruik. Zonder duidelijke afspraken is dit vaak problematisch.",
+    followUp: "Wilt u meer weten over de juridische aspecten?",
+    fullAnswer: "AVG en AI:\n• **Grondslag**: wettelijke basis nodig voor gegevensverwerking\n• **Transparantie**: duidelijkheid over hoe data wordt gebruikt\n• **Doelbinding**: data alleen gebruiken voor het oorspronkelijke doel\n• **Minimalisatie**: alleen noodzakelijke data verwerken",
+    moreInfo: "Bij publieke AI-diensten is vaak onduidelijk waar data wordt opgeslagen, wie toegang heeft, en hoe het wordt gebruikt. Dit maakt rechtmatige verwerking onder de AVG vrijwel onmogelijk, vandaar de sterke waarschuwing tegen gebruik van persoonsgegevens.",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=15",
+    actions: [
+      { text: "DPIA verplichtingen", nextId: "governance-dpia-wanneer" },
+      { text: "Andere wetgeving", nextId: "governance-andere-wetten" },
+      { text: "Terug naar privacy", nextId: "ambtenaar-persoonsgegevens-risicos" }
+    ]
   },
   {
     id: "governance-ai-verordening",
-    question: "Wat is de AI-verordening?",
-    keywords: ["ai-verordening", "wetgeving", "juridisch", "risicocategorieen", "gpai"],
-    shortAnswer: "De Europese AI-verordening is een uitgebreide wet die kaders en eisen vastlegt voor de ontwikkeling en het gebruik van AI. Het deelt AI-systemen in op basis van risico, met strengere regels voor hoog-risico toepassingen.",
+    question: "Wat is de Europese AI-verordening?",
+    keywords: ["ai-verordening", "europees", "wetgeving", "verordening"],
+    shortAnswer: "De AI-verordening is Europese wetgeving die kaders stelt voor AI-ontwikkeling en -gebruik, met strengere regels voor hoger risico toepassingen.",
+    followUp: "Wilt u weten hoe dit uw werk beïnvloedt?",
+    fullAnswer: "AI-verordening kernpunten:\n• **Risico-gebaseerd**: verschillende regels per risiconiveau\n• **Transparantie**: vereisten voor AI-systeembeschrijving\n• **Hoog-risico**: strenge eisen voor kritieke toepassingen\n• **Verboden**: bepaalde AI-toepassingen zijn niet toegestaan",
+    moreInfo: "De verordening geldt gefaseerd vanaf 2024-2026. Voor generatieve AI gelden specifieke eisen rond transparantie en het aangeven van AI-gebruik aan eindgebruikers. Organisaties moeten zorgen dat personeel voldoende AI-kennis heeft.",
     url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=15",
     actions: [
-        { text: "Wat is hoog-risico AI?", nextId: "governance-hoog-risico-ai" }
+      { text: "Wat is hoog-risico AI?", nextId: "governance-hoog-risico-definitie" },
+      { text: "Transparantie verplichtingen", nextId: "governance-transparantie" },
+      { text: "AI-geletterdheid vereisten", nextId: "governance-ai-geletterdheid" }
     ]
   },
-    {
-    id: "governance-hoog-risico-ai",
-    question: "Wat is hoog-risico AI?",
-    keywords: ["hoog-risico", "high risk", "ai-verordening"],
-    shortAnswer: "Hoog-risico AI-toepassingen zijn door de AI-verordening gedefinieerd als systemen die een hoog risico inhouden voor de gezondheid, veiligheid of fundamentele rechten van personen. Deze moeten aan strenge verplichtingen voldoen.",
+  {
+    id: "governance-hoog-risico-definitie",
+    question: "Wat is hoog-risico AI volgens de AI-verordening?",
+    keywords: ["hoog-risico", "high-risk", "definitie", "classificatie"],
+    shortAnswer: "Hoog-risico AI zijn systemen die ingrijpen in fundamentele rechten of kritieke sectoren zoals gezondheidszorg, onderwijs of rechtspraak.",
+    followUp: "Wilt u weten welke extra eisen gelden?",
+    fullAnswer: "Hoog-risico AI kenmerken:\n• **Impact**: grote invloed op mensen's leven en rechten\n• **Sectoren**: gezondheidszorg, onderwijs, werk, rechtspraak\n• **Beslissingen**: automatische of ondersteunende besluitvorming\n• **Gevolgen**: moeilijk omkeerbare effecten",
+    moreInfo: "De AI-verordening bepaalt de risicocategorie op basis van gebruik, niet op basis van de technologie zelf. Een chatbot voor algemene vragen is laag-risico, maar dezelfde technologie voor sollicitatiescreening kan hoog-risico zijn.",
     url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=24",
-    actions: [ {text: "Terug naar AI-verordening", nextId: "governance-ai-verordening"} ]
+    actions: [
+      { text: "Welke eisen gelden?", nextId: "governance-hoog-risico-eisen" },
+      { text: "Hoe bepaal ik het risico?", nextId: "governance-risico-bepalen" },
+      { text: "Terug naar AI-verordening", nextId: "governance-ai-verordening" }
+    ]
   },
   {
-    id: "ambtenaar-menselijke-tussenkomst",
-    question: "Is menselijke controle altijd nodig?",
-    keywords: ["menselijke tussenkomst", "controle", "verantwoordelijkheid", "human-in-the-loop"],
-    shortAnswer: "Ja, de handreiking benadrukt dat er altijd een vorm van menselijke tussenkomst ('human-in-the-loop') ingebouwd moet zijn. De ambtenaar blijft aan het stuur en is eindverantwoordelijk.",
-    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=10",
-    actions: [ {text: "Terug naar hoofdregels", nextId: "ambtenaar-regels-samenvatting"} ]
+    id: "governance-transparantie",
+    question: "Wat zijn de transparantie verplichtingen?",
+    keywords: ["transparantie", "openheid", "documentatie", "communicatie"],
+    shortAnswer: "U moet transparant zijn over AI-gebruik, vooral wanneer burgers direct interacteren met AI-systemen of deze invloed hebben op besluitvorming.",
+    followUp: "Wilt u weten hoe u dit praktisch kunt doen?",
+    fullAnswer: "Transparantie vereisten:\n• **Algoritmeregister**: publiceer AI-systemen die u gebruikt\n• **Burger-informatie**: vertel wanneer AI wordt ingezet\n• **Menselijke optie**: bied altijd contact met een persoon aan\n• **Documentatie**: leg ontwerpkeuzes en risico's vast",
+    moreInfo: "Praktische implementatie: plaats duidelijke labels bij AI-tools, maak AI-gebruik zichtbaar in processen, documenteer in het Algoritmeregister, en zorg voor een contactmogelijkheid voor vragen. Dit bouwt vertrouwen en voldoet aan wettelijke eisen.",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=17",
+    actions: [
+      { text: "Algoritmeregister uitleg", nextId: "governance-algoritmeregister-gebruik" },
+      { text: "Hoe informeer ik burgers?", nextId: "governance-burger-informeren" },
+      { text: "Documentatie tips", nextId: "governance-documentatie-tips" }
+    ]
   },
   {
-    id: "ambtenaar-toepassingen",
-    question: "Voor welke taken kan ik AI veilig gebruiken?",
-    keywords: ["toepassingen", "gebruik", "dagelijks", "taken", "kansen"],
-    shortAnswer: "U kunt AI veilig inzetten voor laagdrempelige, ondersteunende taken zoals brainstormen, samenvatten, teksten versimpelen, informatie opzoeken of helpen bij het schrijven van code.",
-    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=9",
-    actions: [ {text: "Terug naar 'Mag ik AI gebruiken?'", nextId: "ambtenaar-mag-ik-ai-gebruiken"} ]
+    id: "governance-algoritmeregister-gebruik",
+    question: "Hoe gebruik ik het Algoritmeregister?",
+    keywords: ["algoritmeregister", "publiceren", "documenteren"],
+    shortAnswer: "Het Algoritmeregister is een openbare database waar u uw AI-systemen kunt registreren met uitleg over doel, werking en risico's.",
+    followUp: "Wilt u weten wat u moet documenteren?",
+    fullAnswer: "Algoritmeregister gebruik:\n• **Registratie**: alle AI-systemen die u inzet\n• **Beschrijving**: doel, doelgroep, werking, data\n• **Risico's**: uitgevoerde analyses en maatregelen\n• **Updates**: houd informatie actueel",
+    moreInfo: "Gebruik de Publicatiestandaard voor consistente documentatie. Beschrijf minimaal het publieke doel, de beoogde doelgroep, en of het voor interne of externe gebruikers is. Dit helpt bij transparantie en accountability.",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=12",
+    actions: [
+      { text: "Wat is de Publicatiestandaard?", nextId: "governance-publicatiestandaard" },
+      { text: "Terug naar transparantie", nextId: "governance-transparantie" },
+      { text: "Andere governance aspecten", nextId: "governance-overzicht" }
+    ]
   },
   {
-    id: "governance-cybersecurity",
-    question: "Wat zijn de cybersecurity risico's?",
-    keywords: ["cybersecurity", "veiligheid", "risicos", "promptinjectie", "datalekken"],
-    shortAnswer: "De belangrijkste risico's zijn datalekken (via invoer van gevoelige data), en aanvallen op het AI-model zelf, zoals 'promptinjectie' om het model te manipuleren of schadelijke output te laten produceren.",
+    id: "governance-risico-analyse-doen",
+    question: "Welke risicoanalyses moet ik uitvoeren?",
+    keywords: ["risicoanalyse", "dpia", "iama", "aiia", "verplicht"],
+    shortAnswer: "U moet altijd een risicoanalyse uitvoeren voordat u AI inkoopt of ontwikkelt. Bij persoonsgegevens is een DPIA verplicht.",
+    followUp: "Wilt u weten welke analyse geschikt is voor uw situatie?",
+    fullAnswer: "Verplichte analyses:\n• **DPIA**: altijd bij persoonsgegevens (pre-scan minimum)\n• **IAMA/AIIA**: impact op mensenrechten en algoritmen\n• **BIO-scan**: informatiebeveiliging risico's\n• **Eigen instrument**: organisatie-specifieke analyses",
+    moreInfo: "Het doel is interdisciplinaire discussie tussen verschillende rollen over risico's. Betrek juristen, privacy officers, ethici en eindgebruikers. Leg uitkomsten bestuurlijk voor en documenteer alle analyses centraal.",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=13",
+    actions: [
+      { text: "Wanneer DPIA nodig?", nextId: "governance-dpia-wanneer" },
+      { text: "Wat is een IAMA?", nextId: "governance-iama-uitleg" },
+      { text: "Wie moet ik betrekken?", nextId: "governance-stakeholders" }
+    ]
+  },
+  {
+    id: "governance-dpia-wanneer",
+    question: "Wanneer is een DPIA verplicht?",
+    keywords: ["dpia", "verplicht", "wanneer", "persoonsgegevens"],
+    shortAnswer: "Een DPIA is verplicht wanneer de gegevensverwerking waarschijnlijk een hoog risico inhoudt voor personen. Een pre-scan DPIA is altijd verplicht bij persoonsgegevens.",
+    followUp: "Wilt u weten hoe u een DPIA uitvoert?",
+    fullAnswer: "DPIA vereisten:\n• **Pre-scan**: altijd bij persoonsgegevens\n• **Volledige DPIA**: bij hoog risico voor betrokkenen\n• **Consultatie**: betrek CPO en FG in het proces\n• **Documentatie**: leg proces en uitkomsten vast",
+    moreInfo: "Hoog risico indicatoren: systematische monitoring, gevoelige data, kwetsbare personen, innovatieve technologie, of combinatie van data uit verschillende bronnen. Bij twijfel, voer altijd een DPIA uit.",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=13",
+    actions: [
+      { text: "Wat is hoog risico?", nextId: "governance-hoog-risico-indicatoren" },
+      { text: "Wie zijn CPO en FG?", nextId: "governance-privacy-rollen" },
+      { text: "Terug naar risicoanalyses", nextId: "governance-risico-analyse-doen" }
+    ]
+  },
+  {
+    id: "ambtenaar-veilig-experimenteren",
+    question: "Hoe kan ik veilig experimenteren met AI?",
+    keywords: ["experimenteren", "testen", "veilig", "proberen"],
+    shortAnswer: "Experimenteer in een gecontroleerde omgeving met publieke, niet-gevoelige informatie, en documenteer wat u leert.",
+    followUp: "Wilt u concrete tips voor veilig experimenteren?",
+    fullAnswer: "Veilig experimenteren:\n• **Publieke data**: alleen openbaar beschikbare informatie\n• **Fictieve scenarios**: gebruik gemaakte voorbeelden\n• **Gecontroleerde omgeving**: niet in productiesystemen\n• **Documentatie**: houd bij wat werkt en wat niet",
+    moreInfo: "Experimenteer bijvoorbeeld met het samenvatten van publieke rapporten, het herformuleren van beleidsteksten, of het genereren van verschillende versies van een bekendmaking. Dit helpt u de mogelijkheden en beperkingen te leren kennen zonder risico's.",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=13",
+    actions: [
+      { text: "Ideeën voor experimenten", nextId: "ambtenaar-experiment-ideeen" },
+      { text: "Hoe documenteer ik?", nextId: "ambtenaar-experiment-documenteren" },
+      { text: "Terug naar veilige alternatieven", nextId: "ambtenaar-veilige-alternatieven" }
+    ]
+  },
+  {
+    id: "governance-inkoop-tips",
+    question: "Waar moet ik op letten bij AI-inkoop?",
+    keywords: ["inkoop", "aanschaf", "contracteren", "leverancier"],
+    shortAnswer: "Let op privacy-afspraken, voorkom vendor lock-in, en geef voorkeur aan Europese leveranciers met duidelijke voorwaarden.",
+    followUp: "Wilt u concrete inkooptips?",
+    fullAnswer: "Inkoop checklist:\n• **Privacy**: duidelijke afspraken over dataverwerking\n• **Soevereiniteit**: voorkeur voor Europese aanbieders\n• **Flexibiliteit**: vermijd vendor lock-in\n• **Controle**: data-instellingen en logging mogelijkheden",
+    moreInfo: "Zorg dat datadeling voor training standaard uit staat, maak duidelijke afspraken over toegang en opslag van gegevens, en betrek commerciële collega's vanaf het begin. Verken open-source alternatieven voor meer transparantie.",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=13",
+    actions: [
+      { text: "Wat is vendor lock-in?", nextId: "governance-vendor-lockin" },
+      { text: "Europese alternatieven", nextId: "governance-europese-ai" },
+      { text: "Contractvoorwaarden", nextId: "governance-contract-voorwaarden" }
+    ]
+  },
+  {
+    id: "governance-duurzaamheid",
+    question: "Wat zijn de duurzaamheidsaspecten van AI?",
+    keywords: ["duurzaamheid", "milieu", "energieverbruik", "co2"],
+    shortAnswer: "AI-training en gebruik verbruiken veel energie en water. Overweeg of AI echt nodig is en kies voor efficiënte alternatieven waar mogelijk.",
+    followUp: "Wilt u tips voor duurzamer AI-gebruik?",
+    fullAnswer: "Duurzaamheidsimpact:\n• **Energieverbruik**: hoge rekenkracht vereist\n• **Waterverbruik**: koeling van datacenters\n• **Hardware**: schaarse grondstoffen\n• **Schaling**: impact groeit met gebruik",
+    moreInfo: "Maatregelen: gebruik bestaande voorgetrainde modellen i.p.v. zelf trainen, overweeg of AI echt de beste oplossing is, kies energiezuinige providers, en voer een duurzaamheidsimpactanalyse uit waar mogelijk.",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=18",
+    actions: [
+      { text: "Hoe maak ik duurzame keuzes?", nextId: "governance-duurzame-keuzes" },
+      { text: "Wat zijn alternatieven?", nextId: "governance-ai-alternatieven" },
+      { text: "Terug naar ethische aspecten", nextId: "governance-ethiek-overzicht" }
+    ]
+  },
+  {
+    id: "ambtenaar-auteursrecht-praktijk",
+    question: "Hoe ga ik praktisch om met auteursrecht bij AI-gebruik?",
+    keywords: ["auteursrecht", "praktisch", "omgaan", "copyright"],
+    shortAnswer: "Gebruik AI-output als startpunt, niet als eindproduct. Controleer of content te veel lijkt op bestaande werken en vermeld AI-gebruik waar relevant.",
+    followUp: "Wilt u concrete richtlijnen?",
+    fullAnswer: "Praktische auteursrecht richtlijnen:\n• **Startpunt**: gebruik output als inspiratie, niet letterlijk\n• **Bewerking**: pas output altijd aan naar uw context\n• **Controle**: controleer of content te herkenbaar is\n• **Transparantie**: vermeld AI-gebruik in uw werk",
+    moreInfo: "De AI-verordening zal meer transparantie vereisen van AI-aanbieders over hun trainingsdata. Tot die tijd: wees voorzichtig met letterlijk overnemen, vooral van creatieve content zoals teksten, afbeeldingen of code die heel specifiek zijn.",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=15",
+    actions: [
+      { text: "Wanneer is iets te herkenbaar?", nextId: "ambtenaar-herkenbaar-content" },
+      { text: "Hoe vermeld ik AI-gebruik?", nextId: "ambtenaar-ai-bronvermelding" },
+      { text: "Terug naar auteursrecht", nextId: "governance-auteursrecht-detail" }
+    ]
+  },
+  {
+    id: "governance-cybersecurity-detail",
+    question: "Wat zijn de belangrijkste cybersecurity risico's bij AI?",
+    keywords: ["cybersecurity", "beveiliging", "risico", "aanvallen"],
+    shortAnswer: "De hoofdrisico's zijn promptinjectie (manipulatie van AI), data poisoning (vervuilde training) en het gebruik van AI voor cyberaanvallen.",
+    followUp: "Wilt u weten hoe u zich kunt beschermen?",
+    fullAnswer: "Cybersecurity risico's:\n• **Promptinjectie**: manipulatie door kwaadaardige prompts\n• **Data poisoning**: vervuilde trainingsdata\n• **Model extraction**: stelen van AI-modellen\n• **Deepfakes**: misbruik voor desinformatie",
+    moreInfo: "AI kan ook gebruikt worden vóór aanvallen: geautomatiseerde phishing, gepersonaliseerde sociale manipulatie, en snellere malware ontwikkeling. De OWASP heeft een top-10 lijst van AI-beveiligingsrisico's ontwikkeld.",
     url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=20",
-    actions: [ {text: "Terug naar hoofdonderwerpen", nextId: "help-info"} ]
+    actions: [
+      { text: "Wat is promptinjectie?", nextId: "governance-promptinjectie" },
+      { text: "Hoe bescherm ik mezelf?", nextId: "governance-cyber-bescherming" },
+      { text: "OWASP AI top-10", nextId: "governance-owasp-ai" }
+    ]
   },
   {
-      id: "help-info",
-      question: "Help",
-      shortAnswer: "U kunt mij vragen stellen over de inhoud van de handreiking, bijvoorbeeld over:\n\n• Juridische kaders (AVG, AI-verordening)\n• Ethische risico's (bias, transparantie)\n• Praktische tips voor het gebruik van AI\n• Governance en verantwoordelijkheden",
-      actions: [
-        { text: "Mag ik AI gebruiken?", nextId: "ambtenaar-mag-ik-ai-gebruiken" },
-        { text: "Wat is een risicoanalyse?", nextId: "governance-risicoanalyse-verplicht" },
-        { text: "Tips voor prompts", nextId: "ambtenaar-prompt-tips" }
-      ]
+    id: "governance-verantwoordelijkheden",
+    question: "Wie is waarvoor verantwoordelijk bij AI-gebruik?",
+    keywords: ["verantwoordelijk", "rollen", "governance", "rasci"],
+    shortAnswer: "Gebruik een RASCI-model om duidelijk vast te leggen wie Responsible, Accountable, Supportive, Consulted en Informed is voor elk aspect van AI-gebruik.",
+    followUp: "Wilt u weten hoe u dit praktisch inricht?",
+    fullAnswer: "Kernrollen bij AI:\n• **Eindverantwoordelijke**: bestuurder die besluit over inzet\n• **AI-coördinator**: dagelijks beheer en monitoring\n• **Privacy officer**: AVG-compliance\n• **Security officer**: cyberveiligheid aspecten",
+    moreInfo: "Zorg voor duidelijke escalatielijnen, regelmatige evaluatie, en documentatie van beslissingen. Maak het mogelijk om problemen te rapporteren en houd rekening met klokkenluiderregelingen.",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=21",
+    actions: [
+      { text: "RASCI model uitleg", nextId: "governance-rasci-uitleg" },
+      { text: "Hoe rapporteer ik problemen?", nextId: "governance-probleem-rapporteren" },
+      { text: "Escalatielijnen", nextId: "governance-escalatie" }
+    ]
+  },
+  {
+    id: "ambtenaar-bias-herkennen",
+    question: "Hoe herken ik bias in AI-output?",
+    keywords: ["bias", "vooroordeel", "discriminatie", "herkennen"],
+    shortAnswer: "Let op ongelijke behandeling van groepen, stereotypering, en eenzijdige perspectieven in AI-output. Vraag altijd om alternatieven.",
+    followUp: "Wilt u concrete voorbeelden en controletips?",
+    fullAnswer: "Bias signalen:\n• **Stereotypering**: standaard aannames over groepen\n• **Ondervertegenwoordiging**: bepaalde groepen vergeten\n• **Eenzijdigheid**: slechts één perspectief getoond\n• **Historische bias**: oude patronen herhaald",
+    moreInfo: "Test uw prompts met verschillende groepen in gedachten. Vraag expliciet om diverse perspectieven. Let extra op bij beslissingen over mensen, selecties, of aanbevelingen. Gebruik verschillende formulaties om consistentie te controleren.",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=17",
+    actions: [
+      { text: "Voorbeelden van bias", nextId: "governance-bias-voorbeelden" },
+      { text: "Hoe test ik op bias?", nextId: "ambtenaar-bias-testen" },
+      { text: "Terug naar ethiek", nextId: "governance-ethiek-overzicht" }
+    ]
+  },
+  {
+    id: "ambtenaar-training-behoefte",
+    question: "Welke training heb ik nodig voor AI-gebruik?",
+    keywords: ["training", "opleiding", "leren", "vaardigheden"],
+    shortAnswer: "Afhankelijk van uw rol heeft u basiskennis, specifieke vaardigheden, of gespecialiseerde training nodig. Begin met een algemene AI-cursus.",
+    followUp: "Wilt u weten welke training past bij uw rol?",
+    fullAnswer: "Training per rol:\n• **Algemeen**: basisopleiding AI en risico's (bijv. RADIO)\n• **Dagelijks gebruik**: prompt engineering, ethics\n• **Ontwikkelaars**: technische implementatie, beveiliging\n• **Besluitvormers**: governance, strategie, risicomanagement",
+    moreInfo: "De AI-verordening vereist dat organisaties zorgen voor adequate AI-geletterdheid van hun personeel. Start met bewustwording, bouw op met praktische vaardigheden, en specialiseer waar nodig.",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=11",
+    actions: [
+      { text: "Wat is RADIO training?", nextId: "governance-radio-training" },
+      { text: "Prompt engineering leren", nextId: "ambtenaar-prompt-leren" },
+      { text: "AI-geletterdheid vereisten", nextId: "governance-ai-geletterdheid-detail" }
+    ]
   }
 ];
 
