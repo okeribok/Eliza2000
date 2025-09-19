@@ -211,7 +211,32 @@
 // ===================================================================================
 // CHATBOT LOGIC (BASED ON STABLE DRILL-DOWN VERSION)
 // ===================================================================================
+function levenshtein(s1, s2) {
+  const len1 = s1.length;
+  const len2 = s2.length;
+  const matrix = [];
 
+  for (let i = 0; i <= len1; i++) {
+    matrix[i] = [i];
+  }
+  for (let j = 0; j <= len2; j++) {
+    matrix[0][j] = j;
+  }
+
+  for (let i = 1; i <= len1; i++) {
+    for (let j = 1; j <= len2; j++) {
+      const cost = s1[i - 1] === s2[j - 1] ? 0 : 1;
+      matrix[i][j] = Math.min(
+        matrix[i - 1][j] + 1,      // Deletion
+        matrix[i][j - 1] + 1,      // Insertion
+        matrix[i - 1][j - 1] + cost // Substitution
+      );
+    }
+  }
+
+  return matrix[len1][len2];
+}
+  
 class EnhancedDutchEliza {
   constructor(qaData) {
     this.qaData = qaData || [];
@@ -237,26 +262,55 @@ class EnhancedDutchEliza {
     };
   }
 
-  findRelevantQA(userInput) {
+findRelevantQA(userInput) {
     const userKeywords = this.extractKeywords(userInput);
     if (userKeywords.length === 0) return null;
+
     let bestMatch = { score: 0, item: null };
+
+    // The similarity threshold for a word to be considered a match (e.g., 0.8 means 80% similar)
+    const SIMILARITY_THRESHOLD = 0.8;
+
     for (const item of this.qaData) {
-      const itemKeywords = [...this.extractKeywords(item.question), ...(item.keywords || [])];
-      let score = 0;
-      userKeywords.forEach(userWord => {
-        itemKeywords.forEach(itemWord => {
-          if (userWord === itemWord) score += 2;
-          else if (itemWord.includes(userWord)) score += 1;
+        const itemKeywords = new Set([
+            ...this.extractKeywords(item.question),
+            ...(item.keywords || []).flatMap(k => this.extractKeywords(k))
+        ]);
+
+        if (itemKeywords.size === 0) continue;
+
+        let totalSimilarityScore = 0;
+        userKeywords.forEach(userWord => {
+            let bestSimilarityForThisWord = 0;
+
+            for (const itemWord of itemKeywords) {
+                const distance = levenshtein(userWord, itemWord);
+                const maxLength = Math.max(userWord.length, itemWord.length);
+                if (maxLength === 0) continue; // Skip empty strings
+
+                const similarity = 1 - (distance / maxLength);
+                if (similarity > bestSimilarityForThisWord) {
+                    bestSimilarityForThisWord = similarity;
+                }
+            }
+            
+            // Only add the score if it passes our similarity threshold
+            if (bestSimilarityForThisWord >= SIMILARITY_THRESHOLD) {
+                totalSimilarityScore += bestSimilarityForThisWord;
+            }
         });
-      });
-      const confidence = score / (userKeywords.length + itemKeywords.length);
-      if (confidence > bestMatch.score && confidence > 0.35) {
-        bestMatch = { score: confidence, item: item };
-      }
+
+        // The final confidence is the average similarity across all matched keywords.
+        const confidence = totalSimilarityScore / userKeywords.length;
+        
+        // A confidence threshold of 0.6 means the user's query must be, on average, 60% relevant.
+        if (confidence > bestMatch.score && confidence >= 0.6) {
+            bestMatch = { score: confidence, item: item };
+        }
     }
+
     return bestMatch.item;
-  }
+}
   
   extractKeywords(text) {
     const commonWords = ['de','het','een','en','van','in','op','aan','met','voor','door','is','zijn','was','ik','je','u','hij','zij','wij','jullie','hoe','wat','waar','wie','waarom','welke','of','dat','dit'];
