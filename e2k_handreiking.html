@@ -114,18 +114,6 @@
       border: 1px solid #e1e5e9;
       box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     }
-
-    .typing-indicator {
-      background: white;
-      border: 1px solid #e1e5e9;
-      padding: 16px;
-      border-radius: 18px;
-      align-self: flex-start;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    }
     
     .typing-dots { display: flex; gap: 4px; }
     .typing-dot {
@@ -221,49 +209,38 @@
 
 <script>
 // ===================================================================================
-// CHATBOT LOGIC (REFACTORED FOR NO DEAD ENDS)
+// CHATBOT LOGIC (BASED ON STABLE DRILL-DOWN VERSION)
 // ===================================================================================
 
 class EnhancedDutchEliza {
   constructor(qaData) {
-    this.qaData = qaData;
+    this.qaData = qaData || [];
     this.qaDataMap = new Map(qaData.map(item => [item.id, item]));
     this.conversationState = {
-        activeActions: [],
+      currentTopicId: null,
+      detailLevel: "short",
     };
 
+    // Patterns updated for AI Handreiking context
     this.patterns = [
-      { 
-        regex: /^(hallo|hoi|hey|goedemorgen|goedemiddag|goedenavond)!?$/i, 
-        isGreeting: true,
-        response: {
-          text: "Hallo! Ik ben de Wegwijzer voor de Overheidsbrede handreiking Generatieve AI. Hoe kan ik u helpen?",
-          actions: [
-            { text: "Mag ik AI gebruiken?", nextId: "ambtenaar-mag-ik-ai-gebruiken" },
-            { text: "Doel van de handreiking", nextId: "ambtenaar-scope-handreiking" },
-            { text: "Tips voor prompts", nextId: "ambtenaar-prompt-tips" }
-          ]
-        }
-      },
-      { regex: /help|hulp/i, isHelpRequest: true }
+      { regex: /^(hallo|hoi|hey|goedemorgen|goedemiddag|goedenavond)!?$/i, responses: ["Hallo! Ik ben de Wegwijzer voor de Overheidsbrede handreiking Generatieve AI. Hoe kan ik u helpen?"], quickReplies: ["Mag ik AI gebruiken?", "Wat zijn de belangrijkste regels?", "Praktische tips"] },
+      { regex: /bedankt|dank(je)?( wel)?/i, responses: ["Graag gedaan! Is er nog iets anders waarmee ik kan helpen?"], quickReplies: ["Juridische aspecten", "Ethische risico's", "Praktische tips"] },
+      { regex: /doei|tot ziens|dag/i, responses: ["Tot ziens! Kom gerust terug als u meer vragen heeft."] },
+      { regex: /help|hulp/i, isHelpRequest: true },
+      { regex: /ja|graag|zeker|ok(é)?|goed|meer details|vertel meer/i, isContinuation: true },
+      { regex: /nee|niet( nodig)?|hoeft niet/i, responses: ["Prima! Waarmee kan ik u dan wel helpen?"], quickReplies: ["Juridische aspecten", "Ethische risico's", "Praktische tips"] },
     ];
 
     this.fallbackResponse = {
         text: "Ik kan daar geen direct antwoord op vinden in de handreiking. Misschien is uw vraag gerelateerd aan een van deze hoofdonderwerpen?",
-        actions: [
-            { text: "Juridische aspecten", nextId: "governance-ai-verordening" },
-            { text: "Ethische risico's", nextId: "governance-bias-discriminatie" },
-            { text: "Praktische tips", nextId: "ambtenaar-prompt-tips" }
-        ]
+        quickReplies: ["Juridische aspecten", "Ethische risico's", "Praktische tips"]
     };
   }
 
   findRelevantQA(userInput) {
     const userKeywords = this.extractKeywords(userInput);
     if (userKeywords.length === 0) return null;
-
     let bestMatch = { score: 0, item: null };
-
     for (const item of this.qaData) {
       const itemKeywords = [...this.extractKeywords(item.question), ...(item.keywords || [])];
       let score = 0;
@@ -273,9 +250,7 @@ class EnhancedDutchEliza {
           else if (itemWord.includes(userWord)) score += 1;
         });
       });
-      
       const confidence = score / (userKeywords.length + itemKeywords.length);
-      
       if (confidence > bestMatch.score && confidence > 0.35) {
         bestMatch = { score: confidence, item: item };
       }
@@ -289,61 +264,68 @@ class EnhancedDutchEliza {
   }
 
   generateResponse(userInput) {
-    // 1. Check if the input exactly matches an active action button. This is top priority.
-    const actionMatch = this.conversationState.activeActions.find(
-      action => action.text.toLowerCase() === userInput.toLowerCase()
-    );
-    if (actionMatch) {
-      const nextItem = this.qaDataMap.get(actionMatch.nextId);
-      if (nextItem) {
-        this.conversationState.activeActions = nextItem.actions || [];
-        return { answer: nextItem.shortAnswer, ...nextItem };
-      }
-    }
-    
-    // 2. Check for standard patterns like "hallo" or "help".
+    // 1. Check for standard patterns (hallo, bedankt, etc.)
     for (const pattern of this.patterns) {
-      if (pattern.regex.test(userInput)) {
-        if (pattern.isHelpRequest) return this.getHelpInfo();
-        if (pattern.isGreeting) {
-            this.conversationState.activeActions = pattern.response.actions || [];
-            return pattern.response;
+        const match = userInput.match(pattern.regex);
+        if (match) {
+            // Handle contextual drill-down
+            if (pattern.isContinuation && this.conversationState.currentTopicId) {
+                const currentTopic = this.qaDataMap.get(this.conversationState.currentTopicId);
+                if (this.conversationState.detailLevel === 'short' && currentTopic.fullAnswer) {
+                    this.conversationState.detailLevel = 'full';
+                    return { answer: currentTopic.fullAnswer, ...currentTopic };
+                }
+                if (this.conversationState.detailLevel === 'full' && currentTopic.moreInfo) {
+                    this.conversationState.detailLevel = 'more';
+                    return { answer: currentTopic.moreInfo, ...currentTopic };
+                }
+            }
+            // Handle other patterns
+            if (pattern.isHelpRequest) return this.getHelpInfo();
+            if (pattern.responses) {
+                this.resetState();
+                return { text: this.randomChoice(pattern.responses), quickReplies: pattern.quickReplies };
+            }
         }
-      }
     }
 
-    // 3. If no action or pattern matches, search the main Q&A database.
+    // 2. If no pattern matches, search the main Q&A database.
+    this.resetState();
     const qaItem = this.findRelevantQA(userInput);
     if (qaItem) {
-        this.conversationState.activeActions = qaItem.actions || [];
+        this.conversationState.currentTopicId = qaItem.id;
+        this.conversationState.detailLevel = 'short';
         return { answer: qaItem.shortAnswer, ...qaItem };
     }
 
-    // 4. If nothing is found, provide a helpful fallback with actions.
-    this.conversationState.activeActions = this.fallbackResponse.actions || [];
+    // 3. If nothing is found, provide a helpful fallback.
     return this.fallbackResponse;
   }
 
   getHelpInfo() {
-    const helpResponse = {
+    this.resetState();
+    return {
       text: `Ik ben uw Wegwijzer voor de AI Handreiking. U kunt mij vragen stellen over de inhoud, bijvoorbeeld over:\n\n• Juridische kaders (AVG, AI-verordening)\n• Ethische risico's (bias, transparantie)\n• Praktische tips voor het gebruik van AI\n• Governance en verantwoordelijkheden`,
-      actions: [
-        { text: "Mag ik AI gebruiken?", nextId: "ambtenaar-mag-ik-ai-gebruiken" },
-        { text: "Wat is een risicoanalyse?", nextId: "governance-risicoanalyse-verplicht" },
-        { text: "Tips voor prompts", nextId: "ambtenaar-prompt-tips" }
-      ]
+      quickReplies: ["Mag ik AI gebruiken?", "Wat zijn de belangrijkste regels?", "Praktische tips"]
     };
-    this.conversationState.activeActions = helpResponse.actions;
-    return helpResponse;
+  }
+
+  randomChoice(array) {
+    return array[Math.floor(Math.random() * array.length)];
+  }
+  
+  resetState() {
+    this.conversationState.currentTopicId = null;
+    this.conversationState.detailLevel = 'short';
   }
 
   clearSession() {
-      this.conversationState.activeActions = [];
+    this.resetState();
   }
 }
 
 // ===================================================================================
-// Q&A DATASET (RESTRUCTURED FOR NO DEAD ENDS)
+// Q&A DATASET (ADAPTED FOR DRILL-DOWN & CORRECTED)
 // ===================================================================================
 
 const websiteQA = [
@@ -810,8 +792,9 @@ const websiteQA = [
   }
 ];
 
+
 // ===================================================================================
-// UI (USER INTERFACE) CODE (WITH TYPING EFFECT RESTORED)
+// UI (USER INTERFACE) CODE (WITH TYPING EFFECT AND DRILL-DOWN LOGIC)
 // ===================================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -848,9 +831,26 @@ document.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => {
         hideTypingIndicator();
         typeMessage(messageDiv, response, () => {
-          if (response.actions && response.actions.length > 0) {
-            addQuickReplies(response.actions);
+          // After typing, add relevant quick replies
+          let quickReplies = [];
+          const topic = chatbot.qaDataMap.get(response.id);
+          if (topic) {
+             // Offer drill-down if available
+            if (chatbot.conversationState.detailLevel === 'short' && topic.fullAnswer) {
+                const followUpText = topic.followUp || "Wilt u meer details?";
+                messageDiv.innerHTML += `<br><br><em>${followUpText}</em>`;
+            } else if (chatbot.conversationState.detailLevel === 'full' && topic.moreInfo) {
+                messageDiv.innerHTML += `<br><br><em>Wilt u nog meer details?</em>`;
+            }
+            quickReplies = topic.quickReplies || [];
+          } else {
+            quickReplies = response.quickReplies || [];
           }
+          
+          if (quickReplies.length > 0) {
+            addQuickReplies(quickReplies);
+          }
+
           enableInput();
           scrollToBottom();
         });
@@ -906,16 +906,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (indicator) indicator.remove();
   }
 
-  function addQuickReplies(actions) {
+  function addQuickReplies(replies) {
     removeExistingQuickReplies();
     const container = document.createElement('div');
     container.className = 'quick-replies';
     
-    actions.forEach(action => {
+    replies.forEach(reply => {
       const button = document.createElement('button');
       button.className = 'quick-reply-btn';
-      button.textContent = action.text;
-      button.onclick = () => handleQuickReply(action.text);
+      button.textContent = reply;
+      button.onclick = () => handleQuickReply(reply);
       container.appendChild(button);
     });
     chatContainer.appendChild(container);
