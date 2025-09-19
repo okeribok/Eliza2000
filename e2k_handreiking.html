@@ -330,6 +330,132 @@ class EnhancedDutchEliza {
 
 const websiteQA = [
   {
+    id: "governance-ai-model-training",
+    question: "Hoe worden AI-modellen getraind en wat betekent dat voor privacy?",
+    keywords: ["ai training", "model training", "trainingsdata"],
+    shortAnswer: "AI-modellen worden getraind op enorme hoeveelheden data van het internet, vaak zonder toestemming van de rechthebbenden.",
+    followUp: "Wilt u begrijpen waarom dit problematisch is?",
+    fullAnswer: "**AI-model training proces:**\n• **Dataverzameling**: scrapen van miljarden webpagina's\n• **Filtering**: beperkte kwaliteitscontrole\n• **Training**: patroonherkenning in data\n• **Finetuning**: aanpassingen voor specifiek gebruik\n• **Implementatie**: beschikbaar stellen aan gebruikers",
+    moreInfo: "Het probleem: veel trainingsdata bevatten auteursrechtelijk beschermd materiaal en persoonsgegevens zonder toestemming. Eenmaal getraind kunnen deze gegevens opduiken in AI-output. Dit is waarom invoer van persoonsgegevens zo gevaarlijk is - het wordt onderdeel van de training.",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=25",
+    actions: [
+      { text: "Waarom is mijn invoer gevaarlijk?", nextId: "ambtenaar-shadow-it-gevolgen" },
+      { text: "Auteursrecht problemen", nextId: "ambtenaar-auteursrecht-praktijk" },
+      { text: "Terug naar training info", nextId: "training-disambiguation" }
+    ]
+  },
+  {
+    id: "governance-ai-geletterdheid-detail",
+    question: "Wat zijn de AI-geletterdheid vereisten uit de AI-verordening?",
+    keywords: ["ai-geletterdheid", "kennis", "vaardigheden", "verplicht"],
+    shortAnswer: "De AI-verordening vereist dat organisaties zorgen voor adequate AI-kennis van hun personeel, afgestemd op hun rol en de risico's van de AI-systemen die zij gebruiken.",
+    followUp: "Wilt u weten wat dit concreet betekent voor uw organisatie?",
+    fullAnswer: "**AI-geletterdheid vereisten (art. 4 AI-verordening):**\n• **Technische kennis**: begrip van AI-mogelijkheden en beperkingen\n• **Risicobewustzijn**: herkennen van potentiële problemen\n• **Contextkennis**: begrijpen van impact op doelgroepen\n• **Rolspecifieke training**: aangepast aan verantwoordelijkheden",
+    moreInfo: "Dit betekent dat organisaties training moeten bieden op verschillende niveaus: van basisbewustzijn voor alle gebruikers tot specialistische kennis voor ontwikkelaars en besluitvormers. Training moet regelmatig worden geüpdatet naarmate technologie evolueert.",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=11",
+    actions: [
+      { text: "Welke training heb ik nodig?", nextId: "ambtenaar-training-behoefte" },
+      { text: "Organisatie-brede implementatie", nextId: "governance-training-implementatie" },
+      { text: "Terug naar AI-verordening", nextId: "governance-ai-verordening" }
+    ]
+  },
+  {
+    id: "ambtenaar-persoonlijke-aansprakelijkheid",
+    question: "Kan ik persoonlijk aansprakelijk worden gesteld voor AI-misbruik?",
+    keywords: ["persoonlijke aansprakelijkheid", "aansprakelijk", "schadevergoeding"],
+    shortAnswer: "Ja, als ambtenaar kunt u persoonlijk aansprakelijk worden gesteld als u door onrechtmatig AI-gebruik schade veroorzaakt aan uw organisatie of burgers.",
+    followUp: "Wilt u begrijpen hoe dit juridisch werkt?",
+    fullAnswer: "**Persoonlijke aansprakelijkheid scenario's:**\n• **Opzet/grove nalatigheid**: bewust negeren van verboden\n• **Schade aan organisatie**: boetes, reputatieschade, herstelkosten\n• **Schade aan burgers**: privacy-inbreuk, discriminatie\n• **Disciplinaire maatregelen**: waarschuwing tot ontslag",
+    moreInfo: "Voorbeeld: U gebruikt ChatGPT met persoonsgegevens, deze lekken uit via de AI, burgers leiden schade. Uw werkgever kan de schade (boetes, compensatie, herstelkosten) op u verhalen als u bewust tegen de regels handelde. Dit is geen theoretisch risico - naleving wordt steeds strikter gecontroleerd.",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=21",
+    actions: [
+      { text: "Hoe voorkom ik dit risico?", nextId: "ambtenaar-veilige-alternatieven" },
+      { text: "Wat zijn disciplinaire maatregelen?", nextId: "ambtenaar-disciplinaire-gevolgen" },
+      { text: "Terug naar juridische gevolgen", nextId: "ambtenaar-juridische-gevolgen" }
+    ]
+  },
+    id: "persoonsgegevens-disambiguation",
+    question: "Vragen over persoonsgegevens en AI",
+    keywords: ["persoonsgegevens", "pii", "privacy"],
+    priority: "high",
+    shortAnswer: "Heeft uw vraag betrekking op wat wel/niet mag met persoonsgegevens, de risico's, of hoe u ze herkent?",
+    actions: [
+      { text: "Wat is verboden met persoonsgegevens?", nextId: "ambtenaar-verboden-gebruik" },
+      { text: "Wat zijn de risico's?", nextId: "ambtenaar-persoonsgegevens-risicos" },
+      { text: "Hoe herken ik persoonsgegevens?", nextId: "ambtenaar-persoonsgegevens-herkennen" },
+      { text: "AVG en AI-gebruik", nextId: "governance-avg-vereisten" }
+    ]
+  },
+  {
+    id: "risico-disambiguation",
+    question: "Vragen over AI-risico's",
+    keywords: ["risico", "gevaar", "probleem"],
+    priority: "high", 
+    shortAnswer: "Welk type risico bedoelt u: juridische gevolgen, ethische risico's, of cybersecurity?",
+    actions: [
+      { text: "Juridische risico's en gevolgen", nextId: "ambtenaar-juridische-gevolgen" },
+      { text: "Ethische risico's (bias, discriminatie)", nextId: "governance-ethische-aspecten" },
+      { text: "Cybersecurity risico's", nextId: "governance-cybersecurity-detail" },
+      { text: "Risicoanalyse uitvoeren", nextId: "governance-risico-analyse-doen" }
+    ]
+  },
+  {
+    id: "training-disambiguation", 
+    question: "Vragen over training",
+    keywords: ["training", "opleiding", "leren"],
+    priority: "medium",
+    shortAnswer: "Bedoelt u training van AI-modellen (technisch) of training voor medewerkers?",
+    actions: [
+      { text: "Welke training heb ik nodig?", nextId: "ambtenaar-training-behoefte" },
+      { text: "AI-geletterdheid vereisten", nextId: "governance-ai-geletterdheid-detail" },
+      { text: "Hoe worden AI-modellen getraind?", nextId: "governance-ai-model-training" },
+      { text: "Training data en privacy", nextId: "ambtenaar-shadow-it-gevolgen" }
+    ]
+  },
+    id: "governance-juridische-aspecten",
+    question: "Wat zijn de belangrijkste juridische aspecten bij AI-gebruik?",
+    keywords: ["juridische aspecten", "juridisch", "wet", "regelgeving", "compliance"],
+    shortAnswer: "De belangrijkste juridische kaders zijn de AVG (privacy), AI-verordening (risico's), Archiefwet (bewaarplicht), WOO (openbaarheid), en de Ambtenarenwet (rechtmatig handelen).",
+    followUp: "Wilt u meer weten over een specifiek juridisch kader?",
+    fullAnswer: "**Kernwetgeving voor AI bij overheid:**\n• **AVG**: bescherming persoonsgegevens, DPIA-verplichting\n• **AI-verordening**: risicoclassificatie, transparantie-eisen\n• **Archiefwet**: bewaarplicht overheidsinformatie\n• **WOO**: zorgvuldige informatieverstrekking\n• **Ambtenarenwet**: rechtmatig en integer handelen\n• **Inkoop**: ARBIT voorwaarden, leveranciersmanagement",
+    moreInfo: "Deze wetten overlappen en versterken elkaar. Bijvoorbeeld: een DPIA (AVG) moet rekening houden met AI-risico's (AI-verordening), terwijl de uitkomsten gepubliceerd moeten worden (WOO) en permanent bewaard (Archiefwet). Niet-naleving kan leiden tot boetes, aansprakelijkheid en disciplinaire maatregelen.",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=15",
+    actions: [
+      { text: "AVG en privacy", nextId: "governance-avg-vereisten" },
+      { text: "AI-verordening details", nextId: "governance-ai-verordening" },
+      { text: "Archiefwet uitleg", nextId: "ambtenaar-archiefwet-risico" }
+    ]
+  },
+  {
+    id: "governance-ethische-aspecten",
+    question: "Wat zijn de belangrijkste ethische risico's bij AI?",
+    keywords: ["ethische aspecten", "ethiek", "risico", "discriminatie", "bias"],
+    shortAnswer: "De hoofdrisico's zijn bias en discriminatie, gebrek aan transparantie, betrouwbaarheidsproblemen, en duurzaamheidsimpact.",
+    followUp: "Wilt u meer weten over hoe u deze risico's kunt beheersen?",
+    fullAnswer: "**Ethische uitdagingen:**\n• **Bias**: vooroordelen uit trainingsdata\n• **Discriminatie**: ongelijke behandeling van groepen\n• **Transparantie**: black-box werking AI-modellen\n• **Vertrouwen**: hallucinaties en onjuiste informatie\n• **Duurzaamheid**: hoog energie- en waterverbruik",
+    moreInfo: "Ethische AI-inzet vereist proactief handelen: diversiteit in teams, regelmatige bias-testing, transparante communicatie over AI-gebruik, en bewuste afwegingen over duurzaamheid. De overheid heeft een voorbeeldfunctie in verantwoorde technologie-inzet.",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=17",
+    actions: [
+      { text: "Bias herkennen en voorkomen", nextId: "ambtenaar-bias-herkennen" },
+      { text: "Transparantie verplichtingen", nextId: "governance-transparantie" },
+      { text: "Duurzaamheidsaspecten", nextId: "governance-duurzaamheid" }
+    ]
+  },
+  {
+    id: "governance-governance-aspecten", 
+    question: "Hoe richt ik AI-governance in mijn organisatie in?",
+    keywords: ["governance", "organisatie", "inrichting", "bestuur"],
+    shortAnswer: "Effectieve AI-governance bestaat uit drie pijlers: een AI-strategie (beleid), een AI-stuurgroep (rollen), en een documentatiestrategie (transparantie).",
+    followUp: "Wilt u praktische stappen voor implementatie?",
+    fullAnswer: "**AI-governance structuur:**\n• **Strategie**: intern AI-beleid gebaseerd op handreiking\n• **Organisatie**: duidelijke rollen en verantwoordelijkheden (RASCI)\n• **Processen**: risicoanalyses, inkoop, monitoring\n• **Documentatie**: Algoritmeregister, impact assessments\n• **Controle**: audit, rapportage, verbeterprocessen",
+    moreInfo: "Begin met een AI-stuurgroep met vertegenwoordigers van IT, juridisch, privacy, security en business. Ontwikkel beleid dat aansluit bij bestaande data- en IT-governance. Zorg voor training en bewustwording op alle niveaus.",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=12",
+    actions: [
+      { text: "RASCI-model implementeren", nextId: "governance-verantwoordelijkheden" },
+      { text: "Risicoanalyses uitvoeren", nextId: "governance-risico-analyse-doen" },
+      { text: "Algoritmeregister gebruiken", nextId: "governance-algoritmeregister-gebruik" }
+    ]
+  },
     id: "help-info",
     question: "Help",
     shortAnswer: "Ik help u graag met vragen over de verantwoorde inzet van generatieve AI bij de overheid. U kunt mij bijvoorbeeld vragen over:",
@@ -373,16 +499,61 @@ const websiteQA = [
   {
     id: "ambtenaar-verboden-gebruik",
     question: "Wat is absoluut niet toegestaan bij het gebruik van generatieve AI?",
-    keywords: ["verboden", "niet toegestaan", "persoonsgegevens", "gevoelig", "staatsgeheim"],
-    shortAnswer: "Het is niet toegestaan om persoonsgegevens of vertrouwelijke overheidsinformatie in te voeren in publieke AI-diensten zoals ChatGPT.",
-    followUp: "Wilt u begrijpen waarom dit zo risicovol is?",
-    fullAnswer: "Absoluut verboden gebruik:\n• Persoonsgegevens invoeren in niet-gecontracteerde AI-diensten\n• Staatsgeheimen of vertrouwelijke informatie delen\n• AI gebruiken voor directe besluitvorming zonder menselijke tussenkomst\n• Gebruik onder consumentenvoorwaarden voor productiewerk",
-    moreInfo: "Deze beperkingen bestaan omdat publieke AI-diensten vaak data opslaan en gebruiken voor training, wat kan leiden tot datalekken en schending van privacy- en veiligheidswetgeving. Experimenteren is wel mogelijk in gecontroleerde omgevingen zonder gevoelige data.",
+    keywords: ["verboden", "niet toegestaan", "persoonsgegevens", "gevoelig", "staatsgeheim", "chatgpt", "openai", "shadow it"],
+    shortAnswer: "Het is niet toegestaan om persoonsgegevens of vertrouwelijke overheidsinformatie in te voeren in publieke AI-diensten zoals ChatGPT. Dit kan ernstige juridische gevolgen hebben.",
+    followUp: "Wilt u begrijpen welke wetten u zou overtreden?",
+    fullAnswer: "**WAARSCHUWING**: Gebruik van niet-gecontracteerde diensten zoals ChatGPT, Gemini, of Claude kan leiden tot overtreding van:\n• **AVG**: onrechtmatige verwerking persoonsgegevens\n• **Archiefwet**: vernietigen overheidsinformatie\n• **WOO**: ongeautoriseerd openbaar maken\n• **Ambtenarenwet**: handelen tegen de wet\n• **AI-verordening**: niet-conforme AI-inzet",
+    moreInfo: "**Ernstige gevolgen**: Deze overtredingen kunnen leiden tot disciplinaire maatregelen, persoonlijke aansprakelijkheid, en schade aan burgers. Alle invoer bij publieke AI-diensten kan gebruikt worden voor training en daarmee permanent openbaar worden. Er is geen 'veilige' manier om gevoelige overheidsinformatie in deze systemen te gebruiken.",
     url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=13",
     actions: [
-      { text: "Wat zijn de risico's precies?", nextId: "ambtenaar-persoonsgegevens-risicos" },
-      { text: "Zijn er wel veilige alternatieven?", nextId: "ambtenaar-veilige-alternatieven" },
-      { text: "Terug naar toegestaan gebruik", nextId: "ambtenaar-toepassingen-overzicht" }
+      { text: "Waarom is dit zo gevaarlijk?", nextId: "ambtenaar-shadow-it-gevolgen" },
+      { text: "Wat zijn de juridische risico's?", nextId: "ambtenaar-juridische-gevolgen" },
+      { text: "Zijn er wel veilige alternatieven?", nextId: "ambtenaar-veilige-alternatieven" }
+    ]
+  },
+  {
+    id: "ambtenaar-shadow-it-gevolgen",
+    question: "Waarom is het gebruik van ChatGPT en dergelijke zo gevaarlijk?",
+    keywords: ["chatgpt", "gevaarlijk", "risico", "shadow it", "training data"],
+    shortAnswer: "Omdat alle informatie die u invoert permanent wordt opgeslagen en gebruikt om het AI-model te verbeteren, waardoor het toegankelijk kan worden voor andere gebruikers wereldwijd.",
+    followUp: "Wilt u concrete voorbeelden van wat er mis kan gaan?",
+    fullAnswer: "**Directe gevaren van publieke AI-diensten:**\n• **Training data**: uw input wordt onderdeel van het model\n• **Data mining**: bedrijven analyseren alle overheidsinvoer\n• **Internationale opslag**: data verlaat Nederlandse jurisdictie\n• **Permanente toegang**: onmogelijk om data te verwijderen\n• **Cross-contamination**: uw info kan verschijnen in andermans sessies",
+    moreInfo: "**Concrete voorbeelden**: Personeelsdossiers die in training data terechtkomen, vertrouwelijke beleidsstukken die opduiken in andere AI-sessies, of burgergegevens die permanent gekoppeld worden aan overheidsprocessen. Zelfs 'anonieme' data is vaak herleidbaar door combinatie met andere bronnen.",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=15",
+    actions: [
+      { text: "Welke wetten overtreed ik precies?", nextId: "ambtenaar-juridische-gevolgen" },
+      { text: "Hoe zit het met 'anonieme' data?", nextId: "ambtenaar-anonieme-data-risico" },
+      { text: "Wat zijn de alternatieven?", nextId: "ambtenaar-veilige-alternatieven" }
+    ]
+  },
+  {
+    id: "ambtenaar-juridische-gevolgen",
+    question: "Welke juridische gevolgen kan het gebruik van ChatGPT hebben?",
+    keywords: ["juridische gevolgen", "wet", "overtreding", "straf", "aansprakelijk"],
+    shortAnswer: "U kunt meerdere wetten overtreden die kunnen leiden tot disciplinaire maatregelen, persoonlijke aansprakelijkheid, en schade aan de rechtsbescherming van burgers.",
+    followUp: "Wilt u per wet weten wat de risico's zijn?",
+    fullAnswer: "**Mogelijke wetsovertredingen:**\n• **AVG**: €20M boete + persoonlijke aansprakelijkheid\n• **Archiefwet**: vernietigen overheidsdocumenten (art. 3)\n• **WOO**: ongeautoriseerd verstrekken informatie (art. 5.1)\n• **Ambtenarenwet**: plichtsverzuim (art. 125a Ambtenarenwet)\n• **AI-verordening**: niet-conforme AI-inzet (vanaf 2026)",
+    moreInfo: "**Let op**: Hoewel vervolgingen nog zeldzaam zijn, neemt bewustwording toe. De Autoriteit Persoonsgegevens heeft al aangegeven dat 'scraping bijna altijd illegaal' is. Uw organisatie kan u persoonlijk aansprakelijk stellen voor schade door ongeautoriseerd gebruik van niet-gecontracteerde AI-diensten.",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=15",
+    actions: [
+      { text: "Hoe zit het met de AVG precies?", nextId: "governance-avg-vereisten" },
+      { text: "Wat zegt de Archiefwet?", nextId: "ambtenaar-archiefwet-risico" },
+      { text: "Persoonlijke aansprakelijkheid?", nextId: "ambtenaar-persoonlijke-aansprakelijkheid" }
+    ]
+  },
+  {
+    id: "ambtenaar-archiefwet-risico",
+    question: "Hoe overtreed ik de Archiefwet met AI-gebruik?",
+    keywords: ["archiefwet", "archief", "vernietigen", "overheidsinformatie"],
+    shortAnswer: "Door overheidsinformatie in ChatGPT te zetten, maakt u deze onherleidbaar onderdeel van een commercieel systeem, wat gelijkstaat aan onrechtmatige vernietiging.",
+    followUp: "Wilt u begrijpen waarom dit zo problematisch is?",
+    fullAnswer: "**Archiefwet overtredingen:**\n• **Artikel 3**: overheidsinformatie moet behouden blijven\n• **Onherleidbaarheid**: eenmaal in AI-training is data niet meer te scheiden\n• **Commerciële eigendom**: uw overheidsinformatie wordt eigendom van bedrijf\n• **Verlies van controle**: geen mogelijkheid tot correctie of verwijdering",
+    moreInfo: "De Archiefwet vereist dat overheidsinformatie authentiek, betrouwbaar en toegankelijk blijft. Door informatie in publieke AI te stoppen verliest u definitief de controle en overtreedt u uw bewaarplicht. Dit geldt ook voor 'onbelangrijke' informatie - u mag niet zelf bepalen wat wel/niet bewaard moet worden.",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=16",
+    actions: [
+      { text: "Wat is 'onbelangrijke' informatie?", nextId: "ambtenaar-informatie-classificatie" },
+      { text: "Terug naar juridische gevolgen", nextId: "ambtenaar-juridische-gevolgen" },
+      { text: "Veilige alternatieven", nextId: "ambtenaar-veilige-alternatieven" }
     ]
   },
   {
