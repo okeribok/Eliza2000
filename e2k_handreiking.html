@@ -347,14 +347,27 @@ class EnhancedDutchEliza {
 // ===================================================================================
 
 const websiteQA = [
-  {
+{
     id: "ambtenaar-mag-ik-ai-gebruiken",
     question: "Mag ik generatieve AI gebruiken voor mijn werk?",
     keywords: ["mag", "gebruiken", "toegestaan", "inzetten", "ai", "chatgpt", "werk"],
-    shortAnswer: "Ja, u mag generatieve AI gebruiken als hulpmiddel voor taken met een laag risico, mits u geen gevoelige of persoonsgegevens invoert en er altijd menselijke controle is.",
+    shortAnswer: "De inzet van generatieve AI is uitsluitend toegestaan onder strikte voorwaarden om juridische en ethische risico's te vermijden. Het onjuist gebruik, met name met persoonsgegevens, kan wetten overtreden.",
     actions: [
-        { text: "Voor welke taken?", nextId: "ambtenaar-toepassingen" },
-        { text: "Wat zijn de 3 hoofdregels?", nextId: "ambtenaar-regels-samenvatting" }
+        { text: "Wat is absoluut verboden?", nextId: "ambtenaar-verboden-gebruik" },
+        { text: "Wat zijn de verplichte voorwaarden?", nextId: "ambtenaar-regels-samenvatting" },
+        { text: "Voor welke (veilige) taken mag het wel?", nextId: "ambtenaar-toepassingen" }
+    ]
+  },
+  {
+    id: "ambtenaar-verboden-gebruik",
+    question: "Wat is absoluut verboden bij het gebruik van generatieve AI?",
+    keywords: ["verboden", "niet toegestaan", "persoonsgegevens", "pii", "gevoelig", "avg"],
+    [cite_start]shortAnswer: "Het is absoluut verboden om persoonsgegevens, staatsgeheimen, of andere gevoelige of vertrouwelijke overheidsinformatie in te voeren in publieke, niet-gecontracteerde AI-diensten (zoals de openbare versie van ChatGPT). [cite: 240, 307, 471]",
+    [cite_start]fullAnswer: "Dit type gebruik levert onacceptabele risico's op, omdat de ingevoerde data kan worden opgeslagen en gebruikt voor trainingsdoeleinden door de leverancier, wat kan leiden tot datalekken en schending van o.a. de AVG. [cite: 302, 308, 429] [cite_start]Gebruik van AI onder consumentenvoorwaarden mag enkel voor verkenning in een gecontroleerde omgeving zonder enige gevoelige data. [cite: 240]",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=13",
+    actions: [
+        { text: "Wat zijn dan wel de voorwaarden?", nextId: "ambtenaar-regels-samenvatting" },
+        { text: "Terug naar hoofdonderwerpen", nextId: "help-info" }
     ]
   },
   {
