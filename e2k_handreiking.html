@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nederlandse Chatbot</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 10px;
+    }
+
+    #chat-window {
+      width: 100%;
+      max-width: 600px;
+      height: 85vh;
+      max-height: 700px;
+      display: flex;
+      flex-direction: column;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      background: white;
+    }
+
+    #chat-header {
+      background: linear-gradient(135deg, #0078d7 0%, #005a9f 100%);
+      color: white;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    #chat-title {
+      font-size: 1.3em;
+      font-weight: 600;
+    }
+
+    #chat-controls {
+      display: flex;
+      gap: 10px;
+    }
+
+    .control-btn {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9em;
+      transition: background 0.2s;
+    }
+
+    .control-btn:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
+    .control-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    #chat-container {
+      flex-grow: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      background-color: #fafafa;
+      scroll-behavior: smooth;
+    }
+
+    .message-wrapper {
+      display: flex;
+      flex-direction: column;
+      margin: 8px 0;
+    }
+
+    .message-time {
+      font-size: 0.75em;
+      color: #666;
+      margin: 2px 0;
+    }
+
+    .user-message-wrapper {
+      align-items: flex-end;
+    }
+
+    .user-message-wrapper .message-time {
+      text-align: right;
+    }
+
+    .bot-message-wrapper {
+      align-items: flex-start;
+    }
+
+    .user-message, .bot-message {
+      padding: 12px 16px;
+      border-radius: 18px;
+      max-width: 85%;
+      line-height: 1.5;
+      word-wrap: break-word;
+    }
+
+    .user-message {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      color: white;
+      align-self: flex-end;
+    }
+
+    .bot-message {
+      background: white;
+      color: #333;
+      align-self: flex-start;
+      border: 1px solid #e1e5e9;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .typing-indicator {
+      background: white;
+      border: 1px solid #e1e5e9;
+      padding: 16px;
+      border-radius: 18px;
+      align-self: flex-start;
+      max-width: 85%;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .typing-dots {
+      display: flex;
+      gap: 4px;
+    }
+
+    .typing-dot {
+      width: 6px;
+      height: 6px;
+      background: #666;
+      border-radius: 50%;
+      animation: typing 1.4s infinite ease-in-out;
+    }
+
+    .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+    .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+    @keyframes typing {
+      0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+      40% { opacity: 1; transform: scale(1); }
+    }
+
+    .typing-cursor {
+      display: inline-block;
+      width: 2px;
+      height: 1.2em;
+      background-color: #4facfe;
+      margin-left: 2px;
+      animation: cursor-blink 1s infinite;
+      vertical-align: text-bottom;
+    }
+
+    @keyframes cursor-blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    .quick-replies {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 10px 0;
+      align-self: flex-start;
+      max-width: 85%;
+    }
+
+    .quick-reply-btn {
+      background: #f1f3f4;
+      border: 1px solid #dadce0;
+      color: #3c4043;
+      padding: 8px 12px;
+      border-radius: 16px;
+      cursor: pointer;
+      font-size: 0.9em;
+      transition: all 0.2s;
+    }
+
+    .quick-reply-btn:hover {
+      background: #e8f0fe;
+      border-color: #4285f4;
+      color: #1a73e8;
+    }
+
+    #input-area {
+      display: flex;
+      padding: 16px;
+      border-top: 1px solid #e1e5e9;
+      background-color: white;
+      gap: 10px;
+    }
+
+    #user-input {
+      flex-grow: 1;
+      padding: 12px 16px;
+      border: 2px solid #e1e5e9;
+      border-radius: 24px;
+      outline: none;
+      font-size: 16px;
+      transition: border-color 0.2s;
+    }
+
+    #user-input:focus {
+      border-color: #4285f4;
+    }
+
+    #send-button {
+      padding: 12px 20px;
+      background: linear-gradient(135deg, #4285f4 0%, #1a73e8 100%);
+      color: white;
+      border: none;
+      border-radius: 24px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+      min-width: 80px;
+    }
+
+    #send-button:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3);
+    }
+
+    #send-button:disabled {
+      background: #dadce0;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .link-card {
+      background: #f8f9fa;
+      border: 1px solid #dadce0;
+      border-radius: 8px;
+      padding: 12px;
+      margin: 8px 0;
+      display: inline-block;
+      text-decoration: none;
+      color: #1a73e8;
+      transition: all 0.2s;
+    }
+
+    .link-card:hover {
+      background: #e8f0fe;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .error-message {
+      background: #fce8e6;
+      color: #d93025;
+      padding: 12px;
+      border-radius: 8px;
+      margin: 8px 0;
+      border-left: 4px solid #d93025;
+    }
+
+    /* Mobile responsiveness */
+    @media (max-width: 480px) {
+      body {
+        padding: 5px;
+      }
+      
+      #chat-window {
+        height: 95vh;
+        border-radius: 0;
+      }
+      
+      #chat-header {
+        padding: 15px;
+      }
+      
+      #chat-title {
+        font-size: 1.1em;
+      }
+      
+      .control-btn {
+        padding: 6px 10px;
+        font-size: 0.8em;
+      }
+      
+      .user-message, .bot-message {
+        max-width: 90%;
+        padding: 10px 14px;
+      }
+      
+      #input-area {
+        padding: 12px;
+      }
+      
+      #user-input {
+        font-size: 16px; /* Prevents zoom on iOS */
+      }
+    }
+
+    /* Accessibility improvements */
+    @media (prefers-reduced-motion: reduce) {
+      .typing-dot,
+      .typing-cursor {
+        animation: none;
+      }
+      
+      * {
+        transition: none !important;
+      }
+    }
+
+    /* Focus indicators for keyboard navigation */
+    .control-btn:focus,
+    .quick-reply-btn:focus,
+    #send-button:focus {
+      outline: 2px solid #4285f4;
+      outline-offset: 2px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="chat-window" role="main">
+    <div id="chat-header">
+      <div id="chat-title">Virtuele Assistent</div>
+      <div id="chat-controls">
+        <button class="control-btn" id="clear-btn" title="Gesprek wissen">🗑️ Wissen</button>
+        <button class="control-btn" id="help-btn" title="Help">❓ Help</button>
+      </div>
+    </div>
+    <div id="chat-container" role="log" aria-live="polite" aria-label="Chat berichten"></div>
+    <div id="input-area">
+      <input 
+        type="text" 
+        id="user-input" 
+        placeholder="Typ uw vraag hier..." 
+        autocomplete="off"
+        maxlength="500"
+        aria-label="Uw bericht"
+      >
+      <button id="send-button" aria-label="Bericht verzenden">Stuur</button>
+    </div>
+  </div>
+
+<script>
+// ===================================================================================
+// ENHANCED DUTCH CHATBOT WITH IMPROVED FEATURES
+// ===================================================================================
+
+class EnhancedDutchEliza {
+  constructor(qaData) {
+    this.qaData = qaData || [];
+    this.conversationState = {
+      currentTopic: null,
+      detailLevel: "short",
+      askedFollowUp: false,
+      sessionHistory: [],
+      userPreferences: new Map(),
+      messageCount: 0,
+      lastMessageTime: 0
+    };
+
+    // Enhanced patterns with better responses
+    this.patterns = [
+// NIEUWE REGEL
+{ regex: /^(hallo|hoi|hey|goedemorgen|goedemiddag|goedenavond)!?$/i, responses: ["Hallo! Hoe kan ik u vandaag helpen?", "Goedendag! Waarmee kan ik u van dienst zijn?", "Hoi! Wat kan ik voor u betekenen?"], quickReplies: ["Doel van de handreiking", "Mag ik AI gebruiken?", "Tips voor prompts"] },      { regex: /bedankt?|dank(je)?( wel)?|thanks/i, responses: ["Graag gedaan! Is er nog iets anders waarmee ik kan helpen?", "Geen probleem! Heeft u nog andere vragen?", "Fijn dat ik kon helpen! Waarmee kan ik u verder van dienst zijn?"], quickReplies: ["Nog een vraag", "Dat was alles"] },
+      { regex: /doei|tot ziens|dag|bye|adios|ciao/i, responses: ["Tot ziens! Kom gerust terug als u meer vragen heeft.", "Dag! Het was prettig om u te helpen.", "Tot de volgende keer! Fijne dag verder."] },
+      { regex: /help|hulp|wat kun je|wat kan je/i, responses: ["Ik kan u helpen met vragen over onze diensten, openingstijden, bezorging en retouren. Wat wilt u weten?"], quickReplies: ["Openingstijden", "Bezorging", "Retouren", "Contact"] },
+      { regex: /hoe gaat het|hoe is het|alles goed/i, responses: ["Met mij gaat het prima, dank je! Ik ben hier om u te helpen. Wat kan ik voor u doen?"], quickReplies: ["Stel een vraag"] },
+      
+      // More sophisticated pattern matching
+      { regex: /waarom (.*)\?/i, responses: ["Dat is een goede vraag. Voor '$1' zijn er vaak verschillende redenen. Kunt u specifieker zijn?", "Interessant dat u dat vraagt over '$1'. Wat denkt u zelf dat de reden zou kunnen zijn?"] },
+      { regex: /hoe (.*)\?/i, responses: ["Voor '$1' kan ik u uitleggen hoe dat werkt. Zoekt u naar stap-voor-stap instructies?", "Goed dat u vraagt naar '$1'. Wilt u een gedetailleerde uitleg?"] },
+      { regex: /wat is (.*)\?/i, responses: ["Over '$1' kan ik u meer vertellen. Zoekt u naar een definitie of praktische informatie?"] },
+      
+      // Conversation flow helpers
+      { regex: /ja|graag|zeker|ok(é)?|goed/i, responses: ["Mooi! Hier is meer informatie voor u:"] },
+      { regex: /nee|niet( nodig)?|hoeft niet/i, responses: ["Prima! Waarmee kan ik u dan wel helpen?"], quickReplies: ["Andere vraag", "Openingstijden", "Contact"] },
+      { regex: /meer|details|uitleg|vertel meer/i, responses: ["Natuurlijk! Ik geef u graag meer details."] },
+    ];
+
+    // Enhanced fallback responses with categories
+    this.fallbackResponses = {
+      empathetic: [
+        "Ik begrijp dat dit belangrijk voor u is. Kunt u me wat meer details geven?",
+        "Dat klinkt als een relevante vraag. Kunt u het anders formuleren?",
+        "Interessant punt. Welk aspect interesseert u het most?"
+      ],
+      helpful: [
+        "Ik wil u graag helpen, maar begrijp uw vraag niet helemaal. Kunt u het anders stellen?",
+        "Om u beter te kunnen helpen, zou u uw vraag kunnen verduidelijken?",
+        "Laat me u op een andere manier proberen te helpen. Waar gaat uw vraag precies over?"
+      ],
+      redirective: [
+        "Misschien kan ik u helpen met een van deze onderwerpen:",
+        "Ik ken vooral veel over onze diensten. Waar bent u naar op zoek?",
+        "Laten we kijken of ik u kan helpen met:"
+      ]
+    };
+
+    // Rate limiting
+    this.rateLimitConfig = {
+      maxMessagesPerMinute: 10,
+      messageHistory: []
+    };
+
+    // Initialize error tracking
+    this.errorCount = 0;
+    this.maxErrors = 3;
+  }
+
+  // Enhanced fuzzy matching with typo tolerance
+  calculateSimilarity(str1, str2) {
+    const longer = str1.length > str2.length ? str1 : str2;
+    const shorter = str1.length > str2.length ? str2 : str1;
+    
+    if (longer.length === 0) return 1.0;
+    
+    const distance = this.levenshteinDistance(longer, shorter);
+    return (longer.length - distance) / longer.length;
+  }
+
+  levenshteinDistance(str1, str2) {
+    const matrix = Array(str2.length + 1).fill().map(() => Array(str1.length + 1).fill(0));
+    
+    for (let i = 0; i <= str1.length; i++) matrix[0][i] = i;
+    for (let j = 0; j <= str2.length; j++) matrix[j][0] = j;
+    
+    for (let j = 1; j <= str2.length; j++) {
+      for (let i = 1; i <= str1.length; i++) {
+        const cost = str1[i - 1] === str2[j - 1] ? 0 : 1;
+        matrix[j][i] = Math.min(
+          matrix[j][i - 1] + 1,
+          matrix[j - 1][i] + 1,
+          matrix[j - 1][i - 1] + cost
+        );
+      }
+    }
+    
+    return matrix[str2.length][str1.length];
+  }
+
+  // Rate limiting check
+  checkRateLimit() {
+    const now = Date.now();
+    const oneMinuteAgo = now - 60000;
+    
+    // Clean old messages
+    this.rateLimitConfig.messageHistory = this.rateLimitConfig.messageHistory.filter(
+      time => time > oneMinuteAgo
+    );
+    
+    if (this.rateLimitConfig.messageHistory.length >= this.rateLimitConfig.maxMessagesPerMinute) {
+      return false;
+    }
+    
+    this.rateLimitConfig.messageHistory.push(now);
+    return true;
+  }
+
+  // Enhanced Q&A matching with fuzzy search
+  findRelevantQA(userInput) {
+    const normalizedInput = userInput.toLowerCase().trim();
+    let bestMatch = { found: false, confidence: 0 };
+
+    // Handle follow-up context
+    if (this.conversationState.currentTopic) {
+      const moreInfoRegex = /meer|vertel meer|details|ja|graag|uitleg|verder|doorgaan/i;
+      if (moreInfoRegex.test(normalizedInput)) {
+        const qa = this.qaData.find(item => item.id === this.conversationState.currentTopic);
+        if (qa) {
+          if (this.conversationState.detailLevel === "short" && qa.fullAnswer) {
+            return { 
+              found: true, 
+              confidence: 1.0, 
+              answer: qa.fullAnswer, 
+              id: qa.id, 
+              detailLevel: "full", 
+              url: qa.url, 
+              moreInfo: qa.moreInfo,
+              quickReplies: qa.quickReplies
+            };
+          } else if (this.conversationState.detailLevel === "full" && qa.moreInfo) {
+            return { 
+              found: true, 
+              confidence: 1.0, 
+              answer: qa.moreInfo, 
+              id: qa.id, 
+              detailLevel: "more", 
+              url: qa.url,
+              quickReplies: qa.quickReplies 
+            };
+          }
+        }
+      }
+    }
+    
+    // Reset conversation state for new queries
+    this.resetConversationState();
+
+    const userKeywords = this.extractKeywords(userInput);
+    if (userKeywords.length === 0) return bestMatch;
+
+    // Enhanced matching with similarity scoring
+    for (const qa of this.qaData) {
+      let totalScore = 0;
+      const qaKeywords = [...this.extractKeywords(qa.question), ...(qa.keywords || [])];
+      
+      // Exact keyword matches
+      let exactMatches = 0;
+      userKeywords.forEach(userWord => {
+        qaKeywords.forEach(qaWord => {
+          if (userWord === qaWord) {
+            exactMatches += 2; // Higher weight for exact matches
+          } else if (qaWord.includes(userWord) || userWord.includes(qaWord)) {
+            exactMatches += 1;
+          } else {
+            // Fuzzy matching for typos
+            const similarity = this.calculateSimilarity(userWord, qaWord);
+            if (similarity > 0.8) {
+              exactMatches += similarity;
+            }
+          }
+        });
+      });
+
+      // Calculate confidence with improved algorithm
+      const keywordConfidence = exactMatches / Math.max(userKeywords.length, qaKeywords.length);
+      
+      // Boost confidence for category matches
+      const categoryBoost = qa.category && this.detectCategory(userInput) === qa.category ? 0.2 : 0;
+      
+      // Priority boost
+      const priorityBoost = qa.priority === "high" ? 0.1 : 0;
+      
+      totalScore = keywordConfidence + categoryBoost + priorityBoost;
+      
+      if (totalScore > bestMatch.confidence && totalScore > 0.3) {
+        bestMatch = {
+          found: true,
+          answer: qa.shortAnswer,
+          confidence: totalScore,
+          id: qa.id,
+          detailLevel: "short",
+          followUp: qa.followUp,
+          url: qa.url,
+          fullAnswer: qa.fullAnswer,
+          moreInfo: qa.moreInfo,
+          quickReplies: qa.quickReplies,
+          category: qa.category
+        };
+      }
+    }
+
+    return bestMatch;
+  }
+
+  // Simple category detection
+  detectCategory(input) {
+    const serviceKeywords = ['open', 'tijd', 'wanneer', 'uur'];
+    const deliveryKeywords = ['bezorg', 'lever', 'verzend', 'verstuur'];
+    const returnKeywords = ['retour', 'terug', 'ruil', 'geld'];
+    
+    const normalized = input.toLowerCase();
+    
+    if (serviceKeywords.some(keyword => normalized.includes(keyword))) return 'service';
+    if (deliveryKeywords.some(keyword => normalized.includes(keyword))) return 'delivery';  
+    if (returnKeywords.some(keyword => normalized.includes(keyword))) return 'returns';
+    
+    return null;
+  }
+
+  // Enhanced keyword extraction
+  extractKeywords(text) {
+    const commonWords = [
+      'de','het','een','en','van','in','op','aan','met','voor','door','is','zijn','was',
+      'ik','je','u','hij','zij','wij','jullie','hoe','wat','waar','wie','waarom','welke',
+      'of','dat','dit','deze','die','hebben','kan','willen','zou','zal','moet','mag','wil'
+    ];
+    
+    return text
+      .toLowerCase()
+      .replace(/[^\w\sàáâäèéêëìíîïòóôöùúûüñç]/g, '')
+      .split(/\s+/)
+      .filter(word => word.length > 2 && !commonWords.includes(word))
+      .slice(0, 10); // Limit to prevent performance issues
+  }
+
+  // Enhanced response generation with error handling
+  generateResponse(userInput) {
+    try {
+      // Input validation
+      if (!userInput || userInput.trim().length === 0) {
+        return "Ik heb geen bericht van u ontvangen. Kunt u uw vraag opnieuw stellen?";
+      }
+
+      if (userInput.length > 500) {
+        return "Dat is een erg lange vraag! Kunt u het korter formuleren zodat ik u beter kan helpen?";
+      }
+
+      // Rate limiting
+      if (!this.checkRateLimit()) {
+        return "U stelt erg veel vragen achter elkaar. Neemt u even een pauze en probeer het over een minuut opnieuw.";
+      }
+
+      // Update conversation statistics
+      this.conversationState.messageCount++;
+      this.conversationState.lastMessageTime = Date.now();
+
+      // 1. Try Q&A database first
+      const qaMatch = this.findRelevantQA(userInput);
+      if (qaMatch.found) {
+        this.conversationState.currentTopic = qaMatch.id;
+        this.conversationState.detailLevel = qaMatch.detailLevel;
+        
+        let response = qaMatch.answer;
+
+        // Add follow-up questions intelligently
+        if (qaMatch.detailLevel === "short" && qaMatch.followUp) {
+          response += `\n\n${qaMatch.followUp}`;
+          this.conversationState.askedFollowUp = true;
+        } else if (qaMatch.detailLevel === "full" && qaMatch.moreInfo) {
+          response += `\n\nWilt u nog meer details over dit onderwerp?`;
+          this.conversationState.askedFollowUp = true;
+        }
+        
+        // Add URL as formatted link
+        if (qaMatch.url && (qaMatch.detailLevel === "full" || qaMatch.detailLevel === "more")) {
+          response += `\n\n📎 Meer informatie: ${qaMatch.url}`;
+        }
+        
+        return {
+          text: response,
+          quickReplies: qaMatch.quickReplies,
+          category: qaMatch.category
+        };
+      }
+      
+      // 2. Try pattern matching
+      for (const pattern of this.patterns) {
+        const match = userInput.match(pattern.regex);
+        if (match) {
+          const response = this.randomChoice(pattern.responses);
+          let finalResponse = response;
+          
+          if (match[1]) {
+            finalResponse = this.fixDutchGrammar(response, match[1]);
+          }
+          
+          return {
+            text: finalResponse,
+            quickReplies: pattern.quickReplies
+          };
+        }
+      }
+      
+      // 3. Fallback with context-aware responses
+      const fallbackType = this.conversationState.messageCount > 3 ? 'helpful' : 'empathetic';
+      let fallbackResponse = this.randomChoice(this.fallbackResponses[fallbackType]);
+      
+      // Add topic suggestions for redirective responses
+      if (fallbackType === 'redirective' || Math.random() > 0.7) {
+        return {
+          text: fallbackResponse,
+          quickReplies: ["Openingstijden", "Bezorging", "Retouren", "Contact"]
+        };
+      }
+      
+      return { text: fallbackResponse };
+
+    } catch (error) {
+      console.error('Error generating response:', error);
+      this.errorCount++;
+      
+      if (this.errorCount >= this.maxErrors) {
+        return "Er zijn wat technische problemen. Probeer de pagina te vernieuwen.";
+      }
+      
+      return "Sorry, er ging iets mis. Kunt u uw vraag opnieuw stellen?";
+    }
+  }
+
+  // Enhanced Dutch grammar fixes
+  fixDutchGrammar(response, capturedText) {
+    let subjectAndRest = capturedText.trim();
+    let verb = '';
+    
+    const verbMap = ['is', 'zijn', 'heeft', 'hebben', 'kan', 'kunnen', 'wil', 'willen', 'moet', 'moeten'];
+    
+    for (const v of verbMap) {
+      if (subjectAndRest.toLowerCase().startsWith(v + ' ')) {
+        verb = v;
+        subjectAndRest = subjectAndRest.substring(v.length + 1);
+        break;
+      }
+    }
+    
+    if (verb) {
+      const restructuredText = subjectAndRest + ' ' + verb;
+      return response.replace(/\$1/g, restructuredText);
+    }
+    
+    return response.replace(/\$1/g, capturedText);
+  }
+
+  resetConversationState() {
+    this.conversationState.currentTopic = null;
+    this.conversationState.detailLevel = "short";
+    this.conversationState.askedFollowUp = false;
+  }
+
+  clearSession() {
+    this.conversationState = {
+      currentTopic: null,
+      detailLevel: "short", 
+      askedFollowUp: false,
+      sessionHistory: [],
+      userPreferences: new Map(),
+      messageCount: 0,
+      lastMessageTime: 0
+    };
+    this.errorCount = 0;
+    this.rateLimitConfig.messageHistory = [];
+  }
+  
+  randomChoice(array) {
+    return array[Math.floor(Math.random() * array.length)];
+  }
+
+  // Get help information
+  getHelpInfo() {
+    return {
+      text: `Ik ben uw virtuele assistent en kan helpen met:\n\n• Openingstijden en contactgegevens\n• Bezorging en verzendkosten\n• Retouren en ruilen\n• Algemene vragen over onze service\n\nTyp gewoon uw vraag in normale taal, ik begrijp u wel!`,
+      quickReplies: ["Openingstijden", "Bezorging", "Retouren"]
+    };
+  }
+}
+
+// ===================================================================================
+// Q&A DATASET VOOR DE OVERHEIDSBREDE HANDREIKING GENERATIEVE AI
+// ===================================================================================
+const websiteQA = [
+  {
+    id: "ambtenaar-scope-handreiking",
+    category: "service",
+    priority: "medium",
+    question: "Wat is het doel van deze handreiking voor mij als ambtenaar?",
+    keywords: ["doel", "scope", "handreiking", "document", "waarom"],
+    [cite_start]shortAnswer: "De handreiking geeft u als ambtenaar direct inzetbare handvatten om generatieve AI op een verantwoorde manier te gebruiken in uw werk. [cite: 48]",
+    followUp: "Wilt u weten welke onderwerpen de handreiking precies behandelt?",
+    [cite_start]fullAnswer: "De handreiking behandelt de technologische, organisatorische, ethische en juridische (rand)voorwaarden voor de verantwoorde inzet van generatieve AI. [cite: 32] [cite_start]Het bestrijkt het hele proces: van experimenteren tot en met het toepassen en monitoren van de technologie. [cite: 33]",
+    [cite_start]moreInfo: "Het document is niet-bindend en legt geen nieuwe verplichtingen op. [cite: 34, 36] [cite_start]Het is bedoeld als een direct bruikbaar hulpmiddel, omdat er momenteel nog weinig definitieve standaarden zijn en de Europese AI-verordening nog niet volledig van kracht is. [cite: 47]",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=5",
+    quickReplies: ["Is het bindend?", "Juridische aspecten", "Aanbevelingen voor mij"]
+  },
+  {
+    id: "governance-risicoanalyse-verplicht",
+    category: "governance",
+    priority: "high",
+    question: "Is het uitvoeren van een risicoanalyse verplicht voordat we generatieve AI inzetten?",
+    keywords: ["risicoanalyse", "verplicht", "dpia", "iama", "governance"],
+    [cite_start]shortAnswer: "Ja, voordat een generatief AI-systeem wordt ingekocht of ontwikkeld, moet een risicoanalyse worden uitgevoerd. [cite: 225, 226]",
+    followUp: "Wilt u weten welke soorten risicoanalyses er zijn en wanneer ze nodig zijn?",
+    [cite_start]fullAnswer: "De handreiking noemt verschillende instrumenten uit het Algoritmekader, zoals een Impact Assessment Mensenrechten en Algoritmen (IAMA) of een AI Impact Assessment (AIIA). [cite: 229, 230] [cite_start]Het doel is om een interdisciplinaire discussie over de risico's te starten. [cite: 231]",
+    [cite_start]moreInfo: "Een Data Protection Impact Assessment (DPIA) is specifiek vereist als de AVG dat voorschrijft. [cite: 232] [cite_start]Een pre-scan DPIA is echter áltijd verplicht als er persoonsgegevens worden verwerkt. [cite: 233] [cite_start]De uitkomsten van deze assessments moeten bestuurlijk worden gemaakt. [cite: 235]",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=13",
+    quickReplies: ["Wat is een DPIA?", "Hoog-risico AI", "Algoritmekader"]
+  },
+  {
+    id: "ambtenaar-persoonsgegevens-gebruiken",
+    category: "service",
+    priority: "high",
+    question: "Mag ik persoonsgegevens invoeren in een publieke AI-tool zoals ChatGPT?",
+    keywords: ["persoonsgegevens", "avg", "privacy", "gevoelige informatie", "chatgpt"],
+    [cite_start]shortAnswer: "Nee, het is volgens de privacywetgeving (zoals de AVG) onrechtmatig om zonder wettelijke grondslag persoonsgegevens in een generatief AI-systeem in te voeren. [cite: 470]",
+    followUp: "Wilt u meer weten over de risico's van het delen van data met AI-modellen?",
+    [cite_start]fullAnswer: "Het risico is dat de ingevoerde informatie, inclusief persoonsgegevens, kan worden opgeslagen door de ontwikkelaars van het model. [cite: 307] [cite_start]Deze data kan dan worden gebruikt voor trainingsdoeleinden en kan onbedoeld terugkomen in de uitkomsten voor andere gebruikers, wat tot datalekken kan leiden. [cite: 307, 472]",
+    [cite_start]moreInfo: "Dit geldt standaard bij niet-gecontracteerde diensten. [cite: 308] [cite_start]Zelfs bij ingekochte software is het cruciaal om duidelijke afspraken te maken met leveranciers over datagebruik en -opslag. [cite: 310] [cite_start]Overweeg ook om de instellingen voor datadeling voor modeloptimalisatie uit te schakelen. [cite: 281]",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=15",
+    quickReplies: ["Auteursrecht", "Veiligheidsaspecten", "Tips voor prompts"]
+  },
+  {
+    id: "governance-governancestructuur-opzetten",
+    category: "governance",
+    priority: "high",
+    question: "Hoe zetten we een effectieve AI-governance structuur op binnen onze organisatie?",
+    keywords: ["governance", "structuur", "beleid", "verantwoordelijkheid", "cdo"],
+    [cite_start]shortAnswer: "Een effectieve AI-governance helpt bij de implementatie en het beheersen van risico's en bestaat uit een AI-strategie, een stuurgroep en een documentatiestrategie. [cite: 184, 185, 187]",
+    followUp: "Wilt u de concrete onderdelen van een goede AI-governance structuur zien?",
+    [cite_start]fullAnswer: "Een goede structuur omvat de volgende onderdelen:\n• **AI-strategie of beleid:** Vertaal deze handreiking naar een interne versie en laat deze reviewen door o.a. de CPO, CDO, CISO en CIO. [cite: 188, 189][cite_start]\n• **AI-stuurgroep en verantwoording:** Wijs eindverantwoordelijken toe voor o.a. privacy en cybersecurity in relatie tot AI. [cite: 198, 200][cite_start]\n• **Documentatiestrategie:** Wees transparant over het gebruik van AI, bij voorkeur via het Algoritmeregister. [cite: 212, 213]",
+    [cite_start]moreInfo: "Zorg binnen uw beleid ook voor een 'fall back' scenario voor als de AI niet meer ingezet kan worden. [cite: 194] [cite_start]Wijs burgers er expliciet op als ze met een AI interacteren en bied altijd een optie om met een mens te spreken. [cite: 195, 196] [cite_start]Gebruik een RASCI-model om rollen en verantwoordelijkheden helder te beleggen. [cite: 452]",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=12",
+    quickReplies: ["Wat is een RASCI-model?", "Algoritmeregister", "Verantwoordelijkheid"]
+  },
+  {
+    id: "ambtenaar-auteursrecht",
+    category: "service",
+    priority: "medium",
+    question: "Hoe moet ik omgaan met auteursrecht als ik AI-gegenereerde tekst gebruik?",
+    keywords: ["auteursrecht", "copyright", "bronvermelding", "plagiaat", "trainingsdata"],
+    [cite_start]shortAnswer: "Wees ervan bewust dat AI-resultaten gebaseerd kunnen zijn op auteursrechtelijk beschermd materiaal, omdat de trainingsdata dit vaak bevatten. [cite: 312, 466]",
+    followUp: "Wilt u weten wat u concreet moet doen om risico's te vermijden?",
+    [cite_start]fullAnswer: "Neem de door AI gegenereerde resultaten nooit klakkeloos over, maar gebruik ze als startpunt of ter ondersteuning. [cite: 467] [cite_start]Als u vermoedt dat er inbreuk wordt gemaakt op auteursrecht, gebruik de uitkomsten dan niet. [cite: 468] [cite_start]Bij twijfel is het raadzaam contact op te nemen met een specialist. [cite: 469]",
+    [cite_start]moreInfo: "De AI-verordening zal aanbieders van grote AI-modellen verplichten om transparanter te zijn over hun trainingsdata. [cite: 315, 319] [cite_start]Dit moet rechthebbenden helpen controleren of de regels voor tekst- en datamining worden nageleefd. [cite: 320] [cite_start]De output van een AI mag sowieso niet te veel lijken op een specifiek werk waarmee het getraind is. [cite: 322]",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=15",
+    quickReplies: ["Privacy (AVG)", "Betrouwbaarheid output", "Mag ik AI gebruiken?"]
+  },
+  {
+    id: "governance-bias-discriminatie",
+    category: "governance",
+    priority: "high",
+    question: "Hoe voorkomen we dat onze inzet van generatieve AI leidt tot bias en discriminatie?",
+    keywords: ["bias", "discriminatie", "ethiek", "vooroordelen", "eerlijkheid"],
+    [cite_start]shortAnswer: "Bias kan ontstaan doordat discriminerende patronen uit de trainingsdata worden overgenomen. [cite: 345] [cite_start]Het is essentieel om data kritisch te onderzoeken en mitigerende maatregelen ('guard rails') te treffen. [cite: 346]",
+    followUp: "Wilt u weten welke concrete stappen we als organisatie moeten nemen?",
+    [cite_start]fullAnswer: "Organisaties wordt aangeraden goed na te gaan welke anti-discriminatie-eisen ze stellen. [cite: 354] [cite_start]Resultaten van AI-systemen die mensenrechten raken, moeten tijdig en regelmatig worden getest op ongewenste bias, zowel tijdens de ontwikkeling als na ingebruikname. [cite: 356] [cite_start]Overweeg ook de handreiking 'non-discriminatie by design' te raadplegen. [cite: 355]",
+    [cite_start]moreInfo: "Stel een protocol op voor als er toch discriminatie optreedt. [cite: 203] [cite_start]Het is belangrijk te onderzoeken wat de risico's zijn als een model niet aan de anti-discriminatie-eisen kan voldoen. [cite: 357] [cite_start]Wees ook bedacht op 'groepsdenken', waarbij een model tot een consensus kan komen zonder alternatieve zienswijzen te overwegen. [cite: 348]",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=17",
+    quickReplies: ["Ethische aspecten", "Transparantie", "AI-verordening"]
+  },
+  {
+    id: "ambtenaar-prompt-tips",
+    category: "service",
+    priority: "high",
+    question: "Heb je tips voor het schrijven van goede en veilige prompts?",
+    keywords: ["prompt", "prompting", "instructies", "tips", "effectief"],
+    [cite_start]shortAnswer: "Ja, wees specifiek, geef context, stel regels op en experimenteer met verschillende instructies om de beste en meest betrouwbare resultaten te krijgen. [cite: 484, 493, 496, 498]",
+    followUp: "Wilt u een overzicht van concrete tips voor effectieve prompts?",
+    [cite_start]fullAnswer: "Hier zijn enkele belangrijke tips:\n• **Wees specifiek:** Gebruik duidelijke taal en genoeg details. [cite: 493] [cite_start]Deel een complexe taak op in simpelere subtaken. [cite: 494]\n• **Geef context:** Modellen kennen standaard geen context. [cite_start]Geef dus achtergrondinformatie, het doel en de doelgroep mee. [cite: 496, 497][cite_start]\n• **Stel regels:** Geef aan hoe lang het antwoord moet zijn, en in welke stijl of format (bijv. tabel, lijst, stappenplan). [cite: 499, 500]",
+    [cite_start]moreInfo: "Wees voorzichtig met suggestieve vragen, omdat de AI dan waarschijnlijk een bevestigend antwoord geeft. [cite: 490, 491] [cite_start]Om de uitlegbaarheid te vergroten, kun je 'chain-of-thought prompting' toepassen, waarbij je het model vraagt om zijn beredenering stapsgewijs uit te leggen. [cite: 503, 505] [cite_start]Overweeg een training te volgen, bijvoorbeeld bij RADIO. [cite: 507]",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=22",
+    quickReplies: ["Wat is 'chain-of-thought'?", "Mag ik gevoelige info gebruiken?", "Betrouwbaarheid van AI"]
+  },
+  {
+    id: "governance-inkoop-ai",
+    category: "governance",
+    priority: "high",
+    question: "Waar moeten we op letten bij de inkoop van generatieve AI-toepassingen?",
+    keywords: ["inkoop", "aanschaf", "leverancier", "vendor lock-in", "eisen"],
+    [cite_start]shortAnswer: "Betrek commerciële collega's vanaf het begin, besteed aandacht aan leveranciersmanagement en stel duidelijke requirements op over o.a. datagebruik en monitoring. [cite: 264, 265, 273]",
+    followUp: "Wilt u een checklist met belangrijke aandachtspunten voor het inkoopproces?",
+    [cite_start]fullAnswer: "Belangrijke aandachtspunten zijn:\n• **Voorkom vendor lock-in:** Overweeg alle mogelijkheden en verken lokale of Europese dienstverleners. [cite: 267][cite_start]\n• **Nederlandse taal:** Controleer hoe goed het model omgaat met de Nederlandse taal, eventueel met benchmarks zoals OpengGPT-X. [cite: 270, 271][cite_start]\n• **Voorkeur voor open-source:** Gebruik bij voorkeur een open-source applicatie voor meer transparantie, zolang dit niet ten koste gaat van de veiligheid. [cite: 275, 276][cite_start]\n• **Data-instellingen:** Zorg dat datadeling voor externe modeloptimalisatie standaard uit staat. [cite: 281]",
+    [cite_start]moreInfo: "Leer van andere overheidsorganisaties die al AI hebben geïmplementeerd. [cite: 261] [cite_start]Voor hoog-risico toepassingen zal de opdrachtgever een actievere rol moeten spelen in de samenwerking met de leverancier, bijvoorbeeld door juridische en ethische grenzen aan te geven. [cite: 327, 328]",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=13",
+    quickReplies: ["Open vs Closed source", "Europese soevereiniteit", "Hoog-risico AI"]
+  },
+  {
+    id: "ambtenaar-betrouwbaarheid-hallucineren",
+    category: "service",
+    priority: "high",
+    question: "Is de output van een generatieve AI altijd feitelijk juist?",
+    keywords: ["betrouwbaarheid", "hallucineren", "confabuleren", "juistheid", "fouten"],
+    [cite_start]shortAnswer: "Nee, generatieve AI-modellen geven niet altijd een feitelijk juist antwoord en kunnen onware informatie als feit presenteren (dit heet 'hallucineren'). [cite: 393, 395, 396]",
+    followUp: "Wilt u weten waarom dit gebeurt en hoe u de kwaliteit kunt beoordelen?",
+    [cite_start]fullAnswer: "Dit gebeurt omdat generatieve AI is geoptimaliseerd voor plausibiliteit (wat klinkt logisch), niet voor nauwkeurigheid. [cite: 394] [cite_start]De kwaliteit van de output wordt sterk beïnvloed door de kwaliteit van de trainingsdata en de kwaliteit van uw prompt. [cite: 397] [cite_start]De data kan bijvoorbeeld incompleet of verouderd zijn. [cite: 398]",
+    [cite_start]moreInfo: "Het is essentieel om de uitkomsten altijd kritisch te beoordelen en niet één-op-één over te nemen. [cite: 476] [cite_start]Formuleer eerst uw eigen antwoord voordat u de AI gebruikt. [cite: 477] [cite_start]Voor de overheid is dit extra belangrijk, omdat het verstrekken van onbetrouwbare informatie de geloofwaardigheid en reputatie kan schaden. [cite: 373, 374]",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=18",
+    quickReplies: ["Tips voor prompts", "Ethische aspecten", "Uitlegbaarheid (black box)"]
+  },
+  {
+    id: "governance-transparantie-algoritmeregister",
+    category: "governance",
+    priority: "medium",
+    question: "Hoe zorgen we als organisatie voor transparantie over ons gebruik van generatieve AI?",
+    keywords: ["transparantie", "algoritmeregister", "documentatie", "openheid", "verantwoording"],
+    [cite_start]shortAnswer: "Wees transparant door het gebruik van generatieve AI-toepassingen te documenteren en te publiceren, bij voorkeur via het Algoritmeregister. [cite: 212, 213]",
+    followUp: "Wilt u weten welke informatie we precies moeten documenteren?",
+    [cite_start]fullAnswer: "De documentatie moet gedetailleerd zijn, bijvoorbeeld volgens de Publicatiestandaard. [cite: 218] [cite_start]Beschrijf in ieder geval het publieke doel, de doelgroep en of de interactie intern of extern is. [cite: 219, 220] [cite_start]Documenteer ook overwegingen over datagebruik, bijvoorbeeld of het model verder getraind zal worden en met welke data. [cite: 221]",
+    [cite_start]moreInfo: "Zorg dat uitgevoerde risicoanalyses zoals DPIA's en IAMA's centraal worden verzameld, zodat ze makkelijk terug te vinden zijn en dubbel werk wordt voorkomen. [cite: 223, 224] [cite_start]Als AI invloed heeft op besluitvorming, moeten personen van wie de data wordt verwerkt of die met de AI interacteren hiervan op de hoogte worden gesteld. [cite: 365, 366]",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=17",
+    quickReplies: ["Wat is een DPIA?", "Ethische aspecten", "Uitlegbaarheid"]
+  },
+  {
+    id: "ambtenaar-uitlegbaarheid-blackbox",
+    category: "service",
+    priority: "medium",
+    question: "Waarom wordt gezegd dat generatieve AI een 'black box' is?",
+    keywords: ["black box", "uitlegbaarheid", "werking", "beslisboom", "transparantie"],
+    [cite_start]shortAnswer: "Generatieve AI-modellen worden 'black box' genoemd omdat de uitkomsten niet goed beredeneerd kunnen worden, in tegenstelling tot een eenvoudig algoritme zoals een beslisboom. [cite: 384, 385]",
+    followUp: "Wilt u weten wat dit betekent voor de inzet bij de overheid?",
+    [cite_start]fullAnswer: "De miljarden calculaties die voor elke output nodig zijn, maken het voor een mens onmogelijk om de werking op het laagste niveau te begrijpen. [cite: 386] [cite_start]Dit is een van de hoofdredenen waarom generatieve AI niet voor directe besluitvorming mag worden ingezet, maar alleen ter ondersteuning. [cite: 387]",
+    [cite_start]moreInfo: "Om toch een vorm van uitleg te geven, kan men informatie verschaffen over de capaciteiten, beperkingen en trainingsdata van het model. [cite: 388] [cite_start]Dit helpt gebruikers te begrijpen wat het model wel en niet goed kan. [cite: 388] [cite_start]Het is altijd verstandig om als organisatie na te gaan of een 'black box'-model de beste keuze is, of dat een simpeler, uitlegbaar algoritme dezelfde oplossing kan bieden. [cite: 390]",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=18",
+    quickReplies: ["Betrouwbaarheid AI", "Menselijke tussenkomst", "AI voor besluitvorming"]
+  },
+  {
+    id: "governance-ai-verordening",
+    category: "governance",
+    priority: "high",
+    question: "Wat zijn de belangrijkste implicaties van de Europese AI-verordening voor onze organisatie?",
+    keywords: ["ai-verordening", "wetgeving", "juridisch", "risicocategorieen", "gpai"],
+    [cite_start]shortAnswer: "De AI-verordening is een belangrijk wettelijk kader dat AI-systemen indeelt in risicocategorieën, met zwaardere regels voor hogere risico's. [cite: 291, 292]",
+    followUp: "Wilt u weten hoe dit generatieve AI en onze rol als overheidspartij beïnvloedt?",
+    [cite_start]fullAnswer: "Generatieve AI valt onder 'general purpose AI' (GPAI) in de verordening en heeft specifieke eisen. [cite: 294] [cite_start]Als wij een GPAI-model inkopen en inzetten voor een domein-specifieke toepassing, is het cruciaal om vast te stellen of we dan 'aanbieder' of 'gebruiksverantwoordelijke' zijn. [cite: 296, 297] [cite_start]Dit bepaalt namelijk aan welke vereisten we moeten voldoen. [cite: 298]",
+    [cite_start]moreInfo: "Met name de inzet van hoog-risico toepassingen vereist extra afwegingen en naleving van strenge regels. [cite: 293, 533] [cite_start]De verordening treedt gefaseerd in werking. [cite: 294] [cite_start]Deze handreiking is bedoeld om de periode te overbruggen waarin de verordening nog niet volledig van kracht is. [cite: 47]",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=15",
+    quickReplies: ["Hoog-risico AI", "Juridische aspecten", "Inkoop van AI"]
+  },
+  {
+    id: "ambtenaar-menselijke-tussenkomst",
+    category: "service",
+    priority: "high",
+    question: "Moet er altijd een mens meekijken bij het gebruik van generatieve AI?",
+    keywords: ["menselijke tussenkomst", "controle", "verantwoordelijkheid", "ambtenaar", "human-in-the-loop"],
+    [cite_start]shortAnswer: "Ja, het is van belang om bij de inzet van generatieve AI altijd een vorm van menselijke tussenkomst in te bouwen. [cite: 141]",
+    followUp: "Wilt u weten waarom dit zo belangrijk is?",
+    [cite_start]fullAnswer: "Het inbouwen van menselijke tussenkomst, ook wel 'human-in-the-loop' genoemd, zorgt ervoor dat de ambtenaar aan het stuur blijft bij de inzet van generatieve AI. [cite: 142, 379] [cite_start]Dit draagt bij aan de betrouwbaarheid van de output en zorgt ervoor dat de uiteindelijke verantwoordelijkheid bij een mens ligt. [cite: 379]",
+    [cite_start]moreInfo: "U moet AI slechts als hulpmiddel gebruiken, niet als vervanging voor uw eigen vaardigheden of oordeel. [cite: 475, 476] [cite_start]Neem gegenereerde content nooit één-op-één over en formuleer altijd eerst uw eigen antwoord. [cite: 476, 477] [cite_start]Dit is vooral cruciaal omdat AI niet geschikt is voor directe besluitvorming. [cite: 387]",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=9",
+    quickReplies: ["Uitlegbaarheid (black box)", "Betrouwbaarheid AI", "AI voor besluitvorming"]
+  },
+  {
+    id: "governance-duurzaamheid",
+    category: "governance",
+    priority: "medium",
+    question: "Wat is de milieu-impact van generatieve AI en hoe kunnen we dit als organisatie beperken?",
+    keywords: ["duurzaamheid", "milieu", "energieverbruik", "co2", "waterverbruik"],
+    [cite_start]shortAnswer: "Het trainen en gebruiken van generatieve AI vereist veel rekenkracht, wat impact heeft op het klimaat door energie-, water- en grondstofverbruik. [cite: 400, 401, 403]",
+    followUp: "Wilt u weten welke concrete stappen we kunnen nemen om duurzamer met AI om te gaan?",
+    [cite_start]fullAnswer: "Organisaties wordt aangeraden om na te gaan waarom specifiek voor een generatief AI-model wordt gekozen en of een duurzamer alternatief dezelfde oplossing kan bieden. [cite: 413] [cite_start]Daarnaast kan een duurzaamheidsimpactanalyse worden uitgevoerd om de uitstoot zo laag mogelijk te houden. [cite: 204]",
+    [cite_start]moreInfo: "Concrete maatregelen zijn bijvoorbeeld het gebruiken van bestaande, voorgetrainde systemen en deze enkel te finetunen, of de voorkeur te geven aan energie-efficiënte dataservers. [cite: 205] [cite_start]Helaas bestaan er nog geen gestandaardiseerde methodes om de milieu-impact precies te meten en zijn veel dienstverleners hier niet transparant over. [cite: 408, 409]",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=18",
+    quickReplies: ["Ethische aspecten", "Inkoop van AI", "Keuze voor AI"]
+  },
+  {
+    id: "ambtenaar-toepassingen",
+    category: "service",
+    priority: "medium",
+    question: "Voor welke dagelijkse taken kan ik generatieve AI nuttig en veilig inzetten?",
+    keywords: ["toepassingen", "gebruik", "dagelijks", "taken", "kansen"],
+    [cite_start]shortAnswer: "Generatieve AI kan veilig worden ingezet voor laagdrempelige taken met een lage impact, zoals het genereren van ideeën, vinden van informatie en tekstbewerking. [cite: 109, 110]",
+    followUp: "Wilt u een lijst met voorbeelden van veilige toepassingsgebieden?",
+    [cite_start]fullAnswer: "Veilige toepassingen zijn onder andere:\n• **Nieuwe ideeën genereren:** Helpen bij brainstorms en het aandragen van nieuwe zienswijzen. [cite: 111][cite_start]\n• **Informatie vinden:** Snel publieke of interne informatie lokaliseren. [cite: 113][cite_start]\n• **Tekstbewerking:** Teksten vertalen, versimpelen, of herschrijven voor verschillende doelgroepen. [cite: 125, 126][cite_start]\n• **Softwareontwikkeling:** Helpen bij het schrijven en controleren van code. [cite: 120]",
+    [cite_start]moreInfo: "Andere voorbeelden zijn het ondersteunen van beleidsmedewerkers door antwoorden uit complexe beleidsinformatie te halen [cite: 116][cite_start], het maken van samenvattingen, of het opstellen van concept-FAQ's bij een document[cite: 126]. [cite_start]Voor toepassingen die ingrijpen in het primaire proces of gevoelige data gebruiken, zijn risicoanalyses essentieel. [cite: 138, 139]",
+    url: "https://open.overheid.nl/documenten/9c273b71-cebb-4e11-b06f-fa20f7b4b90e/file#page=9",
+    quickReplies: ["Risico's", "Ideeën genereren", "Software code schrijven"]
+  }
+];
+// ===================================================================================
+// ENHANCED UI WITH ACCESSIBILITY AND MODERN FEATURES  
+// ===================================================================================
+
+document.addEventListener('DOMContentLoaded', () => {
+  const chatContainer = document.getElementById('chat-container');
+  const userInput = document.getElementById('user-input');
+  const sendButton = document.getElementById('send-button');
+  const clearButton = document.getElementById('clear-btn');
+  const helpButton = document.getElementById('help-btn');
+  
+  // Create enhanced chatbot instance
+  const chatbot = new EnhancedDutchEliza(websiteQA);
+  
+  // Conversation state
+  let isTyping = false;
+  let messageCounter = 0;
+
+  // Enhanced message creation with timestamps and accessibility
+  function addMessage(content, isUser, options = {}) {
+    const messageId = `message-${++messageCounter}`;
+    const wrapper = document.createElement('div');
+    wrapper.className = isUser ? 'message-wrapper user-message-wrapper' : 'message-wrapper bot-message-wrapper';
+    wrapper.setAttribute('id', messageId);
+    
+    // Add timestamp
+    const timeDiv = document.createElement('div');
+    timeDiv.className = 'message-time';
+    timeDiv.textContent = new Date().toLocaleTimeString('nl-NL', { 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    });
+    timeDiv.setAttribute('aria-label', `Bericht verzonden om ${timeDiv.textContent}`);
+    
+    const messageDiv = document.createElement('div');
+    messageDiv.className = isUser ? 'user-message' : 'bot-message';
+    messageDiv.setAttribute('role', isUser ? 'log' : 'status');
+    messageDiv.setAttribute('aria-label', isUser ? 'Uw bericht' : 'Antwoord van assistent');
+    
+    wrapper.appendChild(timeDiv);
+    wrapper.appendChild(messageDiv);
+    
+    if (isUser) {
+      messageDiv.textContent = typeof content === 'string' ? content : content.text;
+      chatContainer.appendChild(wrapper);
+      scrollToBottom();
+    } else {
+      chatContainer.appendChild(wrapper);
+      if (options.showTyping !== false) {
+        showTypingIndicator();
+        setTimeout(() => {
+          hideTypingIndicator();
+          typeMessage(messageDiv, content, () => {
+            // Add quick replies if available
+            if (content.quickReplies && content.quickReplies.length > 0) {
+              addQuickReplies(content.quickReplies);
+            }
+            enableInput();
+            scrollToBottom();
+          });
+        }, 400 + Math.random() * 600);
+      } else {
+        typeMessage(messageDiv, content, () => {
+          if (content.quickReplies && content.quickReplies.length > 0) {
+            addQuickReplies(content.quickReplies);
+          }
+          enableInput();
+          scrollToBottom();
+        });
+      }
+    }
+    
+    // Accessibility: announce new messages to screen readers
+    if (!isUser) {
+      setTimeout(() => {
+        messageDiv.setAttribute('aria-live', 'polite');
+      }, 100);
+    }
+  }
+
+  // Enhanced typing animation with better performance
+  function typeMessage(element, content, callback) {
+    const text = typeof content === 'string' ? content : content.text;
+    const parts = text.split(/(\n\n|https?:\/\/[^\s]+|\/[a-zA-Z0-9\/-_]+)/);
+    let currentPart = 0;
+    let currentChar = 0;
+    let displayText = '';
+    
+    const cursor = document.createElement('span');
+    cursor.className = 'typing-cursor';
+    element.appendChild(cursor);
+
+    function typeNextChar() {
+      if (currentPart >= parts.length) {
+        finishTyping(element, text, callback);
+        return;
+      }
+
+      const part = parts[currentPart];
+      
+      if (part.match(/^https?:\/\//) || part.match(/^\/[a-zA-Z0-9\/-_]+$/)) {
+        // Handle URLs instantly
+        displayText += part;
+        element.innerHTML = formatMessage(displayText);
+        element.appendChild(cursor);
+        currentPart++;
+        currentChar = 0;
+        setTimeout(typeNextChar, 200);
+      } else if (part === '\n\n') {
+        // Handle paragraph breaks
+        displayText += part;
+        element.innerHTML = formatMessage(displayText);
+        element.appendChild(cursor);
+        currentPart++;
+        currentChar = 0;
+        setTimeout(typeNextChar, 400);
+      } else if (currentChar < part.length) {
+        // Type regular text character by character
+        displayText += part[currentChar];
+        element.innerHTML = formatMessage(displayText);
+        element.appendChild(cursor);
+        currentChar++;
+        
+        const delay = /[.!?]/.test(part[currentChar - 1]) ? 300 : 
+                     /[,;:]/.test(part[currentChar - 1]) ? 150 :
+                     20 + Math.random() * 40;
+        setTimeout(typeNextChar, delay);
+      } else {
+        // Move to next part
+        currentPart++;
+        currentChar = 0;
+        setTimeout(typeNextChar, 100);
+      }
+    }
+
+    // Start typing
+    setTimeout(typeNextChar, 100);
+  }
+
+  function formatMessage(text) {
+    return text
+      .replace(/\n\n/g, '<br><br>')
+      .replace(/\n/g, '<br>')
+      .replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" rel="noopener" class="link-card">🔗 $1</a>')
+      .replace(/(\/[a-zA-Z0-9\/-_]+)/g, '<a href="$1" target="_blank" class="link-card">📄 $1</a>')
+      .replace(/•\s/g, '<span style="color: #4285f4;">•</span> ');
+  }
+
+  function finishTyping(element, originalText, callback) {
+    // Remove cursor
+    const cursor = element.querySelector('.typing-cursor');
+    if (cursor) cursor.remove();
+    
+    // Set final formatted content
+    element.innerHTML = formatMessage(originalText);
+    
+    if (callback) callback();
+  }
+
+  // Typing indicator
+  function showTypingIndicator() {
+    if (document.getElementById('typing-indicator')) return;
+    
+    const indicator = document.createElement('div');
+    indicator.id = 'typing-indicator';
+    indicator.className = 'typing-indicator';
+    indicator.setAttribute('aria-label', 'Assistent is aan het typen');
+    indicator.innerHTML = `
+      <span>Assistent typt</span>
+      <div class="typing-dots">
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+      </div>
+    `;
+    
+    chatContainer.appendChild(indicator);
+    scrollToBottom();
+  }
+
+  function hideTypingIndicator() {
+    const indicator = document.getElementById('typing-indicator');
+    if (indicator) {
+      indicator.remove();
+    }
+  }
+
+  // Quick replies functionality
+  function addQuickReplies(replies) {
+    removeExistingQuickReplies();
+    
+    const quickRepliesContainer = document.createElement('div');
+    quickRepliesContainer.className = 'quick-replies';
+    quickRepliesContainer.setAttribute('aria-label', 'Snelle antwoord opties');
+    
+    replies.forEach((reply, index) => {
+      const button = document.createElement('button');
+      button.className = 'quick-reply-btn';
+      button.textContent = reply;
+      button.setAttribute('tabindex', '0');
+      button.setAttribute('aria-label', `Snelle reactie: ${reply}`);
+      
+      button.addEventListener('click', () => {
+        handleQuickReply(reply);
+      });
+      
+      button.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleQuickReply(reply);
+        }
+      });
+      
+      quickRepliesContainer.appendChild(button);
+    });
+    
+    chatContainer.appendChild(quickRepliesContainer);
+    scrollToBottom();
+  }
+
+  function removeExistingQuickReplies() {
+    const existing = chatContainer.querySelectorAll('.quick-replies');
+    existing.forEach(el => el.remove());
+  }
+
+  function handleQuickReply(reply) {
+    removeExistingQuickReplies();
+    addMessage(reply, true);
+    disableInput();
+    
+    setTimeout(() => {
+      const response = chatbot.generateResponse(reply);
+      addMessage(response, false);
+    }, 300);
+  }
+
+  // Input management
+  function handleUserInput() {
+    const text = userInput.value.trim();
+    if (!text || isTyping) return;
+    
+    removeExistingQuickReplies();
+    addMessage(text, true);
+    userInput.value = '';
+    disableInput();
+    
+    // Generate response
+    setTimeout(() => {
+      try {
+        const response = chatbot.generateResponse(text);
+        addMessage(response, false);
+      } catch (error) {
+        console.error('Error:', error);
+        addMessage("Sorry, er ging iets mis. Probeer het opnieuw.", false, { showTyping: false });
+        enableInput();
+      }
+    }, 200);
+  }
+
+  function disableInput() {
+    isTyping = true;
+    userInput.disabled = true;
+    sendButton.disabled = true;
+    userInput.placeholder = "Assistent is aan het typen...";
+  }
+
+  function enableInput() {
+    isTyping = false;
+    userInput.disabled = false;
+    sendButton.disabled = false;
+    userInput.placeholder = "Typ uw vraag hier...";
+    userInput.focus();
+  }
+
+  function scrollToBottom() {
+    chatContainer.scrollTo({
+      top: chatContainer.scrollHeight,
+      behavior: 'smooth'
+    });
+  }
+
+  // Clear conversation
+  function clearConversation() {
+    if (confirm('Weet u zeker dat u het gesprek wilt wissen?')) {
+      chatContainer.innerHTML = '';
+      chatbot.clearSession();
+      messageCounter = 0;
+      
+      // Show welcome message again
+      setTimeout(() => {
+        const welcomeResponse = chatbot.generateResponse("hallo");
+        addMessage(welcomeResponse, false);
+      }, 300);
+    }
+  }
+
+  // Show help
+  function showHelp() {
+    removeExistingQuickReplies();
+    const helpInfo = chatbot.getHelpInfo();
+    addMessage(helpInfo, false);
+  }
+
+  // Event listeners
+  sendButton.addEventListener('click', handleUserInput);
+  clearButton.addEventListener('click', clearConversation);
+  helpButton.addEventListener('click', showHelp);
+  
+  userInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleUserInput();
+    }
+  });
+
+  // Character counter (visual feedback)
+  userInput.addEventListener('input', (e) => {
+    const length = e.target.value.length;
+    const maxLength = 500;
+    
+    if (length > maxLength * 0.9) {
+      e.target.style.borderColor = length >= maxLength ? '#d93025' : '#ff9800';
+    } else {
+      e.target.style.borderColor = '#e1e5e9';
+    }
+  });
+
+  // Accessibility improvements
+  document.addEventListener('keydown', (e) => {
+    // Quick keyboard shortcuts
+    if (e.ctrlKey || e.metaKey) {
+      switch(e.key) {
+        case 'k':
+          e.preventDefault();
+          clearConversation();
+          break;
+        case '/':
+          e.preventDefault();
+          userInput.focus();
+          break;
+      }
+    }
+    
+    // Escape key to cancel typing
+    if (e.key === 'Escape' && isTyping) {
+      hideTypingIndicator();
+      enableInput();
+    }
+  });
+
+  // Auto-focus on input when page loads
+  setTimeout(() => {
+    userInput.focus();
+  }, 100);
+
+  // Start conversation with welcome message
+  setTimeout(() => {
+    const welcomeResponse = chatbot.generateResponse("hallo");
+    addMessage(welcomeResponse, false);
+  }, 800);
+
+  // Add some initial loading animation
+  document.getElementById('chat-window').style.opacity = '0';
+  document.getElementById('chat-window').style.transform = 'translateY(20px)';
+  
+  setTimeout(() => {
+    document.getElementById('chat-window').style.transition = 'all 0.5s ease';
+    document.getElementById('chat-window').style.opacity = '1';
+    document.getElementById('chat-window').style.transform = 'translateY(0)';
+  }, 100);
+});
+
+</script>
+
+</body>
+</html>
